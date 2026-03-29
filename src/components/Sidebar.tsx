@@ -20,7 +20,7 @@ const navItems = [
   { icon: Mic,       label: 'Prédire',         path: '/predict' },
   { icon: Radio,     label: 'Studio Train',    path: '/train' },
   { icon: BarChart2, label: 'Analytics',       path: '/analytics' },
-  { icon: User,      label: 'Profil',          path: '/profile' },
+  { icon: User,      label: 'Profils',          path: '/profile' },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed, mobileOpen, onCloseMobile }) => {
@@ -115,7 +115,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed, mobil
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-400/60 hover:text-red-400 hover:bg-red-400/10 transition-all text-sm font-semibold ${collapsed ? 'justify-center' : ''}`}
           >
             <LogOut size={18} />
-            {!collapsed && <span>Déconnexion</span>}
+            {!collapsed && <span>Déconnexions</span>}
           </button>
         </div>
       </aside>
