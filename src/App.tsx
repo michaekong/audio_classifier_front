@@ -7,6 +7,7 @@ import { Portfolios } from './pages/Portfolios';
 import { Predictor } from './pages/Predictor';
 import { Engineer } from './pages/Engineer';
 import StudioAudioForge from './pages/StudioAudioForge/StudioAudioForge';
+import Train from './pages/Train';
 import { LandingPage } from './pages/LandingPage';
 import { 
   Analytics, 
@@ -36,7 +37,8 @@ export default function App() {
           <Route path="/datasets" element={<Layout><Datasets /></Layout>} />
           <Route path="/portfolios" element={<Layout><Portfolios /></Layout>} />
           <Route path="/predict" element={<Layout><Predictor /></Layout>} />
-          <Route path="/train" element={<StudioAudioForge />} />
+          <Route path="/train" element={<Train />} />
+          <Route path="/studio" element={<StudioAudioForge />} />
           <Route path="/analytics" element={<Layout><Analytics /></Layout>} />
           <Route path="/profile" element={<Layout><Profile /></Layout>} />
           <Route path="/api-docs" element={<Layout><APIDocs /></Layout>} />
