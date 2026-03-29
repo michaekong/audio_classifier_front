@@ -193,7 +193,7 @@ export const LandingPage: React.FC = () => {
           <div>
             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">Produit</h4>
             <ul className="space-y-5 text-sm font-bold text-white/60">
-              <li><Link to="/marketplace" className="hover:text-electric transition-colors">Marketplace</Link></li>
+              <li><Link to="/datasets" className="hover:text-electric transition-colors">Datasets</Link></li>
               <li><Link to="/train" className="hover:text-electric transition-colors">Entraînement</Link></li>
               <li><Link to="/predict" className="hover:text-electric transition-colors">Prédiction</Link></li>
               <li><Link to="/api-docs" className="hover:text-electric transition-colors">API REST</Link></li>

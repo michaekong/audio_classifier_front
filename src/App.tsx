@@ -2,7 +2,7 @@ import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Layout } from './components/Layout';
 import { AuthPage } from './pages/AuthPage';
 import { Dashboard } from './pages/Dashboard';
-import { Marketplace } from './pages/Marketplace';
+import { Datasets } from './pages/Datasets';
 import { Portfolios } from './pages/Portfolios';
 import { Predictor } from './pages/Predictor';
 import { Engineer } from './pages/Engineer';
@@ -33,10 +33,10 @@ export default function App() {
 
           {/* Protected App Routes */}
           <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
+          <Route path="/datasets" element={<Layout><Datasets /></Layout>} />
           <Route path="/portfolios" element={<Layout><Portfolios /></Layout>} />
           <Route path="/predict" element={<Layout><Predictor /></Layout>} />
           <Route path="/train" element={<StudioAudioForge />} />
-          <Route path="/marketplace" element={<Layout><Marketplace /></Layout>} />
           <Route path="/analytics" element={<Layout><Analytics /></Layout>} />
           <Route path="/profile" element={<Layout><Profile /></Layout>} />
           <Route path="/api-docs" element={<Layout><APIDocs /></Layout>} />

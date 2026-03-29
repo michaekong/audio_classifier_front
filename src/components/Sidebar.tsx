@@ -5,7 +5,7 @@ import {
   Briefcase, 
   Mic, 
   Settings, 
-  ShoppingCart, 
+  Database, 
   BarChart2, 
   User, 
   LogOut,
@@ -28,10 +28,10 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed, mobileOpen, onCloseMobile }) => {
   const navItems = [
     { icon: Home, label: 'Tableau de bord', path: '/dashboard' },
+    { icon: Database, label: 'Datasets', path: '/datasets' },
     { icon: Briefcase, label: 'Portefeuilles', path: '/portfolios' },
     { icon: Mic, label: 'Prédire', path: '/predict' },
     { icon: Radio, label: 'Studio', path: '/train' },
-    { icon: ShoppingCart, label: 'Marketplace', path: '/marketplace' },
     { icon: BarChart2, label: 'Analytics', path: '/analytics' },
     { icon: User, label: 'Profil', path: '/profile' },
   ];

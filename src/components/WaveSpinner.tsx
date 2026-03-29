@@ -2,45 +2,53 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 interface WaveSpinnerProps {
-  size?: number;
+  size?: 'sm' | 'md' | 'lg';
   color?: string;
+  label?: string;
 }
 
-export const WaveSpinner: React.FC<WaveSpinnerProps> = ({ size = 64, color = '#3B82F6' }) => {
+export const WaveSpinner: React.FC<WaveSpinnerProps> = ({ 
+  size = 'md', 
+  color = 'bg-electric',
+  label 
+}) => {
+  const sizes = {
+    sm: { height: 'h-8', width: 'w-1', gap: 'gap-0.5', count: 5 },
+    md: { height: 'h-16', width: 'w-1.5', gap: 'gap-1', count: 8 },
+    lg: { height: 'h-32', width: 'w-2.5', gap: 'gap-2', count: 12 },
+  };
+
+  const currentSize = sizes[size];
+
   return (
-    <div className="flex items-center justify-center h-full w-full bg-transparent">
-      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-        {[...Array(5)].map((_, i) => (
+    <div className="flex flex-col items-center justify-center gap-4">
+      <div className={`flex items-center justify-center ${currentSize.gap} ${currentSize.height}`}>
+        {[...Array(currentSize.count)].map((_, i) => (
           <motion.div
             key={i}
-            initial={{ scale: 0.5, opacity: 0 }}
             animate={{ 
-              scale: [0.5, 2], 
-              opacity: [0.8, 0],
-              borderWidth: ['2px', '1px']
+              height: ['20%', '100%', '20%'],
+              opacity: [0.3, 1, 0.3]
             }}
             transition={{ 
-              duration: 2, 
+              duration: 0.8, 
               repeat: Infinity, 
-              delay: i * 0.4,
-              ease: "easeOut" 
+              ease: "easeInOut",
+              delay: i * 0.1 
             }}
-            style={{ borderColor: color }}
-            className="absolute w-full h-full rounded-full border"
+            className={`${currentSize.width} ${color} rounded-full shadow-[0_0_15px_rgba(59,130,246,0.5)]`}
           />
         ))}
-        <motion.div 
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{ duration: 1, repeat: Infinity }}
-          style={{ backgroundColor: `${color}33`, borderColor: `${color}66` }}
-          className="w-3/4 h-3/4 rounded-full flex items-center justify-center backdrop-blur-sm border"
-        >
-          <div 
-            style={{ backgroundColor: color, boxShadow: `0 0 15px ${color}` }}
-            className="w-1/3 h-1/3 rounded-full" 
-          />
-        </motion.div>
       </div>
+      {label && (
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] animate-pulse"
+        >
+          {label}
+        </motion.p>
+      )}
     </div>
   );
 };
