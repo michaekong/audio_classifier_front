@@ -25,3 +25,12 @@ export interface TrainingStep {
   title: string;
   status: 'pending' | 'active' | 'completed';
 }
+
+export interface AudioModel {
+  id: string;
+  name: string;
+  accuracy: number;
+  f1: number;
+  size: string;
+  latency: string;
+}
