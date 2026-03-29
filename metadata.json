@@ -1,0 +1,7 @@
+{
+  "name": "AudioClass AI - Professional Audio Classification Platform",
+  "description": "A dual-interface platform for engineers and predictors to classify audio using advanced ML models. Features include marketplace, training wizard, and real-time prediction.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
