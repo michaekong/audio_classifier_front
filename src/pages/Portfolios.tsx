@@ -97,7 +97,7 @@ const PORTFOLIOS = [
   {
     id: 'p5',
     name: 'AgriSound-X',
-    tagline: 'Détectez les parasites avant quils détruisent',
+    tagline: 'Détectez les parasites avant qu'ils détruisent',
     description: "Détection précoce de parasites dans les cultures par analyse sonore. Identifie le bruit de mastication des insectes ravageurs avec une précision de terrain.",
     category: 'agriculture',
     accuracy: 88.5, f1: 87.2, precision: 88.9, recall: 86.5,
