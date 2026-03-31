@@ -1,575 +1,251 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Briefcase, Star, Download, Play, ChevronRight, Database,
-  Cpu, BarChart2, Tag, Users, Calendar, Shield, Zap,
-  Music, Activity, Heart, Sprout, Globe, ArrowUpRight,
-  Check, X, Info, MessageSquare, ThumbsUp, Eye
-} from 'lucide-react';
+import { Briefcase, Star, Download, ChevronRight, Database, Cpu, Zap, Music, Activity, Heart, Sprout, Globe, Check, MessageSquare, ThumbsUp, Eye, Calendar, Shield } from 'lucide-react';
 
-/* ─── Data ──────────────────────────────────────────────────────────── */
-
-const CATEGORIES = [
-  { id: 'all',         label: 'Tous',        icon: Globe },
-  { id: 'music',       label: 'Musique',     icon: Music },
-  { id: 'medical',     label: 'Médical',     icon: Heart },
-  { id: 'industrial',  label: 'Industrie',   icon: Activity },
-  { id: 'agriculture', label: 'Agriculture', icon: Sprout },
+const CATS = [{ id:'all',label:'Tous',icon:Globe },{ id:'music',label:'Musique',icon:Music },{ id:'medical',label:'Médical',icon:Heart },{ id:'industrial',label:'Industrie',icon:Activity },{ id:'agriculture',label:'Agriculture',icon:Sprout }];
+const PORTS = [
+  { id:'p1', name:'AfroBeatsID', tagline:'Identifiez chaque genre en 200ms', desc:'Classification de genres musicaux africains (Makossa, Afrobeats, Amapiano…). Analyse rythmique et spectrale.', cat:'music', acc:91.2, f1:89.5, prec:90.1, rec:89.0, ds:'AfricoSound-8K', dsSize:'8 732 samples', classes:10, emb:'MFCC + Mel Spectrogram', arch:'CNN ResNet-18', author:'KultureAI', av:'K', rating:4.8, reviews:512, price:0, deploys:3240, updated:'Mars 2025', tags:['Musique','Culture','Afrique'], color:'#f59e0b', cL:'rgba(245,158,11,.1)', outClasses:['Makossa','Afrobeats','Amapiano','Zoblazo','Ndombolo','Highlife','Afro-jazz','Bongo Flava','Coupé-décalé','Fuji'], models:[{ name:'GenreNet-CNN', acc:91.2, f1:89.5, size:'24 MB', lat:'18ms' },{ name:'RhythmLSTM', acc:88.7, f1:86.9, size:'12 MB', lat:'32ms' }], revs:[{ a:'Yannick T.', t:'Précision bluffante sur le Makossa. Intégré en prod depuis 3 mois.', s:5, d:'Jan 2025' }] },
+  { id:'p2', name:'VibraPredict', tagline:'Maintenance prédictive avant la panne', desc:'Détection précoce des anomalies de roulements et moteurs. Réduit les pannes de 78%.', cat:'industrial', acc:95.4, f1:94.1, prec:95.8, rec:93.5, ds:'InduSound-Pro', dsSize:'42 000 samples', classes:8, emb:'PANNs + Mel Spectrogram', arch:'Transformer', author:'IndusTech', av:'I', rating:4.5, reviews:128, price:50, deploys:890, updated:'Fév. 2025', tags:['Industrie','IoT','Edge'], color:'#3b6fe8', cL:'rgba(59,111,232,.1)', outClasses:['Roulement OK','Roulement défaut','Moteur OK','Surcharge','Cavitation','Déséquilibre','Résonance','Lubrification'], models:[{ name:'VibTransformer', acc:95.4, f1:94.1, size:'48 MB', lat:'22ms' },{ name:'VibCNN-Lite', acc:91.2, f1:90.0, size:'8 MB', lat:'8ms' }], revs:[{ a:'Jean-Marc D.', t:'ROI en 2 mois. Réduit nos alertes de maintenance de 68%.', s:5, d:'Mars 2025' }] },
+  { id:'p3', name:'RespiDiag-Pro', tagline:'Détection respiratoire certifiée CE', desc:'Diagnostic des pathologies respiratoires par analyse de toux. COVID-19, Asthme, Pneumonie, Bronchite.', cat:'medical', acc:92.8, f1:92.0, prec:93.2, rec:91.8, ds:'MedCough-Global', dsSize:'18 500 samples', classes:6, emb:'Wav2Vec 2.0', arch:'CNN + Attention', author:'HealthSound', av:'H', rating:4.9, reviews:342, price:0, deploys:12400, updated:'Jan. 2025', tags:['Santé','Médical','CE Certifié'], color:'#22c55e', cL:'rgba(34,197,94,.1)', outClasses:['Sain','COVID-19','Asthme','Pneumonie','Bronchite','BPCO'], models:[{ name:'RespiNet-XL', acc:92.8, f1:92.0, size:'64 MB', lat:'45ms' },{ name:'CoughBERT', acc:90.1, f1:89.5, size:'128 MB', lat:'95ms' },{ name:'RespiNet-Lite', acc:87.3, f1:86.0, size:'6 MB', lat:'9ms' }], revs:[{ a:'Dr. Ngo S.', t:'Utilisé en screening initial. Très bon rappel COVID. CE est un vrai plus.', s:5, d:'Fév 2025' }] },
+  { id:'p4', name:'BabyCry-AI', tagline:'Comprenez chaque pleur', desc:"Traducteur de pleurs de nourrissons. Identifie : Faim, Sommeil, Couche sale, Coliques ou Câlin.", cat:'medical', acc:89.7, f1:88.4, prec:89.0, rec:87.8, ds:'CryCorpus-5K', dsSize:'5 200 samples', classes:5, emb:'MFCC + VGGish', arch:'LSTM + CNN', author:'BabyCare Tech', av:'B', rating:4.7, reviews:890, price:0, deploys:15600, updated:'Mars 2025', tags:['Pédiatrie','Mobile','Offline'], color:'#8b5cf6', cL:'rgba(139,92,246,.1)', outClasses:['Faim','Sommeil','Couche sale','Coliques','Câlin'], models:[{ name:'CryNet', acc:89.7, f1:88.4, size:'18 MB', lat:'12ms' }], revs:[{ a:'Sophie R.', t:'Mon bébé de 3 mois — distingue faim vs coliques avec ~85% de précision.', s:5, d:'Mars 2025' }] },
+  { id:'p5', name:'AgriSound-X', tagline:'Détectez les parasites avant la panne', desc:"Détection précoce de parasites dans les cultures par analyse sonore. Identifie le bruit de mastication.", cat:'agriculture', acc:88.5, f1:87.2, prec:88.9, rec:86.5, ds:'BugSound-Agri', dsSize:'6 100 samples', classes:7, emb:'CLAP', arch:'CNN + RNN', author:'AgriAI', av:'A', rating:4.2, reviews:96, price:25, deploys:420, updated:'Fév. 2025', tags:['Agriculture','SmartFarming','Edge'], color:'#06b6d4', cL:'rgba(6,182,212,.1)', outClasses:['Sain','Criquet','Chenille','Doryphore','Puceron','Cochenille','Thrips'], models:[{ name:'BugNet-Field', acc:88.5, f1:87.2, size:'22 MB', lat:'28ms' },{ name:'BugNet-Edge', acc:84.1, f1:82.8, size:'4 MB', lat:'6ms' }], revs:[{ a:'Diallo F.', t:'Détecte les criquets 48h avant visible à l\'œil nu. 2 récoltes sauvées.', s:5, d:'Jan 2025' }] },
 ];
 
-const PORTFOLIOS = [
-  {
-    id: 'p1',
-    name: 'AfroBeatsID',
-    tagline: 'Identifiez chaque genre en 200ms',
-    description: 'Classification haute fidélité de genres musicaux africains (Makossa, Afrobeats, Amapiano, Zoblazo, Ndombolo). Analyse rythmique et spectrale de pointe.',
-    category: 'music',
-    accuracy: 91.2, f1: 89.5, precision: 90.1, recall: 89.0,
-    dataset: 'AfricoSound-8K', datasetSize: '8 732 samples', classes: 10,
-    embedding: 'MFCC + Mel Spectrogram', model: 'CNN ResNet-18',
-    author: 'KultureAI', authorAvatar: 'K', rating: 4.8, reviews: 512,
-    price: 0, deployments: 3240, lastUpdate: 'Mars 2025',
-    tags: ['Musique', 'Culture', 'Afrique', 'Temps réel'],
-    color: '#f59e0b', colorLight: 'rgba(245,158,11,0.12)',
-    outputClasses: ['Makossa','Afrobeats','Amapiano','Zoblazo','Ndombolo','Highlife','Afro-jazz','Bongo Flava','Coupé-décalé','Fuji'],
-    models: [
-      { name: 'GenreNet-CNN', accuracy: 91.2, f1: 89.5, size: '24 MB', latency: '18ms' },
-      { name: 'RhythmLSTM', accuracy: 88.7, f1: 86.9, size: '12 MB', latency: '32ms' },
-    ]
-  },
-  {
-    id: 'p2',
-    name: 'VibraPredict',
-    tagline: 'Maintenance prédictive avant la panne',
-    description: 'Détection précoce des anomalies de roulements et moteurs industriels. Réduit les pannes non planifiées de 78% en production réelle.',
-    category: 'industrial',
-    accuracy: 95.4, f1: 94.1, precision: 95.8, recall: 93.5,
-    dataset: 'InduSound-Pro', datasetSize: '42 000 samples', classes: 8,
-    embedding: 'PANNs + Mel Spectrogram', model: 'Transformer',
-    author: 'IndusTech', authorAvatar: 'I', rating: 4.5, reviews: 128,
-    price: 50, deployments: 890, lastUpdate: 'Fév. 2025',
-    tags: ['Industrie', 'IoT', 'Maintenance', 'Edge'],
-    color: '#0d7fea', colorLight: 'rgba(13,127,234,0.12)',
-    outputClasses: ['Roulement OK','Roulement défaut','Moteur OK','Surcharge','Cavitation','Déséquilibre','Résonance','Lubrification'],
-    models: [
-      { name: 'VibTransformer', accuracy: 95.4, f1: 94.1, size: '48 MB', latency: '22ms' },
-      { name: 'VibCNN-Lite', accuracy: 91.2, f1: 90.0, size: '8 MB', latency: '8ms' },
-    ]
-  },
-  {
-    id: 'p3',
-    name: 'RespiDiag-Pro',
-    tagline: 'Détection respiratoire certifiée CE',
-    description: 'Diagnostic assisté des pathologies respiratoires par analyse de toux. Détection de COVID-19, Asthme, Pneumonie et Bronchite avec une précision clinique.',
-    category: 'medical',
-    accuracy: 92.8, f1: 92.0, precision: 93.2, recall: 91.8,
-    dataset: 'MedCough-Global', datasetSize: '18 500 samples', classes: 6,
-    embedding: 'Wav2Vec 2.0', model: 'CNN + Attention',
-    author: 'HealthSound', authorAvatar: 'H', rating: 4.9, reviews: 342,
-    price: 0, deployments: 12400, lastUpdate: 'Jan. 2025',
-    tags: ['Santé', 'Médical', 'IA', 'CE Certifié'],
-    color: '#10b981', colorLight: 'rgba(16,185,129,0.12)',
-    outputClasses: ['Sain','COVID-19','Asthme','Pneumonie','Bronchite','BPCO'],
-    models: [
-      { name: 'RespiNet-XL', accuracy: 92.8, f1: 92.0, size: '64 MB', latency: '45ms' },
-      { name: 'CoughBERT', accuracy: 90.1, f1: 89.5, size: '128 MB', latency: '95ms' },
-      { name: 'RespiNet-Lite', accuracy: 87.3, f1: 86.0, size: '6 MB', latency: '9ms' },
-    ]
-  },
-  {
-    id: 'p4',
-    name: 'BabyCry-AI',
-    tagline: 'Comprenez chaque pleur de votre bébé',
-    description: "Traducteur de pleurs de nourrissons. Identifie avec précision : Faim, Sommeil, Couche sale, Coliques ou Besoin de câlin. Validé par 890 parents.",
-    category: 'medical',
-    accuracy: 89.7, f1: 88.4, precision: 89.0, recall: 87.8,
-    dataset: 'CryCorpus-5K', datasetSize: '5 200 samples', classes: 5,
-    embedding: 'MFCC + VGGish', model: 'LSTM + CNN',
-    author: 'BabyCare Tech', authorAvatar: 'B', rating: 4.7, reviews: 890,
-    price: 0, deployments: 15600, lastUpdate: 'Mars 2025',
-    tags: ['Pédiatrie', 'Parentalité', 'Mobile', 'Offline'],
-    color: '#7c3aed', colorLight: 'rgba(124,58,237,0.12)',
-    outputClasses: ['Faim','Sommeil','Couche sale','Coliques','Câlin'],
-    models: [
-      { name: 'CryNet', accuracy: 89.7, f1: 88.4, size: '18 MB', latency: '12ms' },
-    ]
-  },
-  {
-    id: 'p5',
-    name: 'AgriSound-X',
-    tagline: 'Détectez les parasites avant quils détruisent',
-    description: "Détection précoce de parasites dans les cultures par analyse sonore. Identifie le bruit de mastication des insectes ravageurs avec une précision de terrain.",
-    category: 'agriculture',
-    accuracy: 88.5, f1: 87.2, precision: 88.9, recall: 86.5,
-    dataset: 'BugSound-Agri', datasetSize: '6 100 samples', classes: 7,
-    embedding: 'CLAP', model: 'CNN + RNN',
-    author: 'AgriAI', authorAvatar: 'A', rating: 4.2, reviews: 96,
-    price: 25, deployments: 420, lastUpdate: 'Fév. 2025',
-    tags: ['Agriculture', 'SmartFarming', 'IoT', 'Edge'],
-    color: '#06b6d4', colorLight: 'rgba(6,182,212,0.12)',
-    outputClasses: ['Sain','Criquet','Chenille','Doryphore','Puceron','Cochenille','Thrips'],
-    models: [
-      { name: 'BugNet-Field', accuracy: 88.5, f1: 87.2, size: '22 MB', latency: '28ms' },
-      { name: 'BugNet-Edge', accuracy: 84.1, f1: 82.8, size: '4 MB', latency: '6ms' },
-    ]
-  },
-];
-
-/* ─── Subcomponents ─────────────────────────────────────────────────── */
-
-function WaveformDecor({ color }: { color: string }) {
-  return (
-    <div className="flex items-end gap-[3px] h-8">
-      {[...Array(20)].map((_, i) => (
-        <motion.div key={i}
-          animate={{ scaleY: [0.2, 0.6 + Math.random() * 0.8, 0.2] }}
-          transition={{ duration: 0.8 + i * 0.06, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-1 rounded-full origin-bottom"
-          style={{ background: color, height: '100%' }}
-        />
-      ))}
-    </div>
-  );
+function Stars({ v }: { v:number }) {
+  return <span style={{ display:'flex', gap:2 }}>
+    {[1,2,3,4,5].map(n => <Star key={n} size={12} fill={n<=v?'#f59e0b':'none'} color={n<=v?'#f59e0b':'var(--bdr)'}/>)}
+  </span>;
 }
-
-function AccuracyRing({ value, color }: { value: number; color: string }) {
-  const r = 36, c = 2 * Math.PI * r;
-  return (
-    <div className="relative w-24 h-24">
-      <svg className="w-full h-full -rotate-90" viewBox="0 0 96 96">
-        <circle cx="48" cy="48" r={r} fill="none" stroke="var(--bg-2)" strokeWidth="8" />
-        <motion.circle cx="48" cy="48" r={r} fill="none" stroke={color} strokeWidth="8"
-          strokeLinecap="round" strokeDasharray={c}
-          initial={{ strokeDashoffset: c }}
-          animate={{ strokeDashoffset: c - (value / 100) * c }}
-          transition={{ duration: 1.5, ease: 'easeOut' }} />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-xl font-display font-bold" style={{ color }}>{value}%</span>
-        <span className="text-[9px] font-mono" style={{ color: 'var(--text-3)' }}>ACC</span>
-      </div>
-    </div>
-  );
-}
-
-function StarRating({ rating }: { rating: number }) {
-  return (
-    <div className="flex items-center gap-1">
-      {[1,2,3,4,5].map(i => (
-        <Star key={i} size={12} className={i <= Math.floor(rating) ? 'fill-current text-warm' : 'text-[var(--border)]'} />
-      ))}
-      <span className="text-xs font-bold ml-1" style={{ color: 'var(--text-2)' }}>{rating}</span>
-    </div>
-  );
-}
-
-function ReviewCard({ author, text, stars, date }: any) {
-  return (
-    <div className="rounded-xl p-4 border" style={{ background: 'var(--bg-1)', borderColor: 'var(--border)' }}>
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold"
-            style={{ background: 'linear-gradient(135deg,#0d7fea,#7c3aed)' }}>{author[0]}</div>
-          <span className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{author}</span>
-        </div>
-        <div className="flex gap-0.5">
-          {[...Array(5)].map((_,i) => <Star key={i} size={10} className={i < stars ? 'fill-current text-warm' : 'text-[var(--border)]'} />)}
-        </div>
-      </div>
-      <p className="text-sm leading-relaxed" style={{ color: 'var(--text-3)' }}>{text}</p>
-      <p className="text-xs mt-2 font-mono" style={{ color: 'var(--text-3)' }}>{date}</p>
-    </div>
-  );
-}
-
-const MOCK_REVIEWS: Record<string, any[]> = {
-  p1: [
-    { author: 'Yannick T.', text: 'Précision bluffante sur le Makossa. Intégré en production depuis 3 mois, aucune dérive.', stars: 5, date: 'Jan 2025' },
-    { author: 'Amara K.', text: 'Très bon modèle, quelques erreurs sur le Fuji mais globalement excellent.', stars: 4, date: 'Fév 2025' },
-  ],
-  p2: [
-    { author: 'Jean-Marc D.', text: 'Réduit nos alertes de maintenance de 68%. ROI en 2 mois.', stars: 5, date: 'Mars 2025' },
-  ],
-  p3: [
-    { author: 'Dr. Ngo S.', text: 'Utilisé en screening initial. Très bon rappel sur COVID. Certifié CE est un plus.', stars: 5, date: 'Fév 2025' },
-    { author: 'Claire M.', text: 'Intégration API simple. Latence acceptable pour notre workflow clinique.', stars: 4, date: 'Jan 2025' },
-  ],
-  p4: [
-    { author: 'Sophie R.', text: 'Miracle ! Mon bébé de 3 mois, l\'app distingue faim vs coliques avec 85% de précision.', stars: 5, date: 'Mars 2025' },
-    { author: 'Thomas B.', text: 'Utile la nuit. Parfois confond sommeil et câlin mais toujours pertinent.', stars: 4, date: 'Fév 2025' },
-  ],
-  p5: [
-    { author: 'Diallo F.', text: 'Détecte les criquets 48h avant visible à l\'oeil nu. Économisé 2 récoltes.', stars: 5, date: 'Jan 2025' },
-  ],
-};
-
-/* ─── Main Page ──────────────────────────────────────────────────────── */
 
 export const Portfolios: React.FC = () => {
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [selectedId, setSelectedId] = useState<string | null>('p1');
-  const [detailTab, setDetailTab] = useState<'overview' | 'models' | 'classes' | 'reviews'>('overview');
-  const [userRating, setUserRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [reviewText, setReviewText] = useState('');
-  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [cat, setCat] = useState('all');
+  const [selId, setSelId] = useState('p1');
+  const [tab, setTab] = useState<'overview'|'models'|'classes'|'reviews'>('overview');
+  const [rstars, setRstars] = useState(0);
+  const [rtxt, setRtxt] = useState('');
+  const [rsent, setRsent] = useState(false);
 
-  const filtered = PORTFOLIOS.filter(p => activeCategory === 'all' || p.category === activeCategory);
-  const selected = PORTFOLIOS.find(p => p.id === selectedId);
-
-  const handleSubmitReview = () => {
-    if (!userRating || !reviewText.trim()) return;
-    setReviewSubmitted(true);
-    setTimeout(() => setReviewSubmitted(false), 3000);
-    setUserRating(0); setReviewText('');
-  };
+  const filtered = PORTS.filter(p => cat==='all' || p.cat===cat);
+  const sel = PORTS.find(p => p.id===selId) || PORTS[0];
 
   return (
-    <div className="animate-fade-in space-y-6">
+    <div className="page-wrap fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Briefcase size={18} style={{ color: '#0d7fea' }} />
-            <span className="text-xs font-mono uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Portefeuilles</span>
-          </div>
-          <h1 className="font-display text-3xl font-bold" style={{ color: 'var(--text)' }}>
-            Galerie de Modèles <span style={{ color: '#0d7fea' }}>Audio</span>
-          </h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>
-            {PORTFOLIOS.length} portefeuilles · {PORTFOLIOS.reduce((a,p)=>a+p.models.length,0)} modèles entraînés
-          </p>
+      <div className="row-between">
+        <div className="col" style={{ gap:4 }}>
+          <div className="eyebrow"><Briefcase size={13} color="var(--accent)"/>Portefeuilles</div>
+          <h1 className="h1 font-heading">Galerie de <span className="text-accent">Modèles</span></h1>
+          <p className="sub">{PORTS.length} portefeuilles · {PORTS.reduce((a,p)=>a+p.models.length,0)} modèles entraînés</p>
         </div>
-        <div className="flex items-center gap-2 p-1 rounded-xl border" style={{ background: 'var(--bg-1)', borderColor: 'var(--border)' }}>
-          {CATEGORIES.map(cat => (
-            <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-              style={activeCategory === cat.id
-                ? { background: '#0d7fea', color: '#fff', boxShadow: '0 2px 8px rgba(13,127,234,.4)' }
-                : { color: 'var(--text-3)' }}>
-              <cat.icon size={12} />
-              <span className="hidden sm:inline">{cat.label}</span>
+        {/* Cat filter */}
+        <div style={{ display:'flex', gap:4, padding:4, borderRadius:12, border:'1px solid var(--bdr)', background:'var(--s1)', flexWrap:'wrap' }}>
+          {CATS.map(c => (
+            <button key={c.id} onClick={() => setCat(c.id)}
+              className="btn btn-sm" style={{ display:'flex', alignItems:'center', gap:5, transition:'all .15s', background: cat===c.id?'var(--accent)':'transparent', color: cat===c.id?'#fff':'var(--t3)', boxShadow: cat===c.id?'0 2px 8px rgba(59,111,232,.38)':'none', border:'none' }}>
+              <c.icon size={12}/><span className="hidden sm:inline">{c.label}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Main grid */}
-      <div className="flex flex-col xl:flex-row gap-5">
-
-        {/* Cards list */}
-        <div className="xl:w-80 shrink-0 space-y-3">
-          <AnimatePresence>
-            {filtered.map((p, i) => (
-              <motion.button key={p.id}
-                initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.06 }}
-                onClick={() => { setSelectedId(p.id); setDetailTab('overview'); }}
-                className={`w-full text-left rounded-2xl p-4 border transition-all ${selectedId === p.id ? 'shadow-lg' : 'hover:shadow-md'}`}
-                style={{
-                  background: selectedId === p.id ? p.colorLight : 'var(--bg-card)',
-                  borderColor: selectedId === p.id ? p.color : 'var(--border)',
-                  boxShadow: selectedId === p.id ? `0 0 0 2px ${p.color}33, 0 8px 24px rgba(0,0,0,.08)` : undefined,
-                }}>
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0"
-                    style={{ background: p.color }}>{p.authorAvatar}</div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-display font-bold text-sm" style={{ color: 'var(--text)' }}>{p.name}</span>
-                      {p.price === 0
-                        ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(16,185,129,0.15)', color: '#10b981' }}>Gratuit</span>
-                        : <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(13,127,234,0.15)', color: '#0d7fea' }}>{p.price}€/mois</span>}
-                    </div>
-                    <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-3)' }}>{p.tagline}</p>
-                    <div className="flex items-center gap-3 mt-2">
-                      <div className="flex items-center gap-1">
-                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#10b981' }} />
-                        <span className="text-[10px] font-mono font-bold" style={{ color: '#10b981' }}>{p.accuracy}%</span>
-                      </div>
-                      <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>{p.models.length} modèle{p.models.length > 1 ? 's' : ''}</span>
-                      <div className="flex items-center gap-0.5">
-                        <Star size={10} className="fill-current" style={{ color: '#f59e0b' }} />
-                        <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>{p.rating}</span>
-                      </div>
-                    </div>
+      {/* Main */}
+      <div style={{ display:'flex', gap:16, alignItems:'flex-start', flexWrap:'wrap' }}>
+        {/* List */}
+        <div style={{ width:280, flexShrink:0, display:'flex', flexDirection:'column', gap:8 }}>
+          {filtered.map((p,i) => (
+            <motion.button key={p.id} initial={{ opacity:0, x:-10 }} animate={{ opacity:1, x:0 }} transition={{ delay:i*.04 }}
+              onClick={() => { setSelId(p.id); setTab('overview'); }}
+              style={{ width:'100%', textAlign:'left', padding:'14px', borderRadius:14, cursor:'pointer', transition:'all .2s', background: sel.id===p.id?p.cL:'var(--card)', border:`1px solid ${sel.id===p.id?p.color:'var(--bdr)'}`, boxShadow: sel.id===p.id?`0 0 0 2px ${p.color}20, var(--sh-sm)`:'var(--sh-sm)' }}>
+              <div style={{ display:'flex', alignItems:'flex-start', gap:10 }}>
+                <div style={{ width:36, height:36, borderRadius:10, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontWeight:700, fontSize:14, flexShrink:0, fontFamily:"'Outfit',system-ui" }}>{p.av}</div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:6, flexWrap:'wrap' }}>
+                    <span style={{ fontSize:13, fontWeight:700, color:'var(--t1)', fontFamily:"'Outfit',system-ui" }}>{p.name}</span>
+                    {p.price===0 ? <span className="badge bd-green" style={{ fontSize:10 }}>Gratuit</span> : <span className="badge bd-blue" style={{ fontSize:10 }}>{p.price}€/mois</span>}
                   </div>
-                  <ChevronRight size={14} style={{ color: selectedId === p.id ? p.color : 'var(--text-3)' }}
-                    className={`shrink-0 mt-1 transition-transform ${selectedId === p.id ? 'rotate-0' : ''}`} />
+                  <p style={{ fontSize:11, color:'var(--t3)', marginTop:3, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{p.tagline}</p>
+                  <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:5 }}>
+                    <span style={{ fontSize:11, fontWeight:700, color:p.color, fontFamily:"'JetBrains Mono',monospace" }}>{p.acc}%</span>
+                    <span style={{ fontSize:10, color:'var(--t4)' }}>·</span>
+                    <Stars v={Math.round(p.rating)}/>
+                    <span style={{ fontSize:10, color:'var(--t3)' }}>{p.rating}</span>
+                  </div>
                 </div>
-              </motion.button>
-            ))}
-          </AnimatePresence>
+              </div>
+            </motion.button>
+          ))}
         </div>
 
-        {/* Detail panel */}
+        {/* Detail */}
         <AnimatePresence mode="wait">
-          {selected ? (
-            <motion.div key={selected.id}
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-              className="flex-1 min-w-0 rounded-2xl border overflow-hidden"
-              style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}>
-
-              {/* Hero */}
-              <div className="relative p-6 overflow-hidden" style={{ background: selected.colorLight }}>
-                <div className="absolute inset-0 opacity-30"
-                  style={{ background: `radial-gradient(ellipse at 80% 50%, ${selected.color}40, transparent 70%)` }} />
-                <div className="relative flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold"
-                        style={{ background: selected.color }}>{selected.authorAvatar}</div>
-                      <span className="text-xs font-mono" style={{ color: 'var(--text-3)' }}>par {selected.author}</span>
-                      {selected.price === 0 &&
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-success/15 text-success">Gratuit</span>}
-                    </div>
-                    <h2 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: 'var(--text)' }}>{selected.name}</h2>
-                    <p className="text-sm mt-1" style={{ color: 'var(--text-2)' }}>{selected.tagline}</p>
-                    <div className="flex items-center gap-3 mt-3 flex-wrap">
-                      <StarRating rating={selected.rating} />
-                      <span className="text-xs" style={{ color: 'var(--text-3)' }}>{selected.reviews} avis</span>
-                      <span className="text-xs" style={{ color: 'var(--text-3)' }}>·</span>
-                      <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-3)' }}>
-                        <Eye size={11} /> {selected.deployments.toLocaleString()} déploiements
-                      </div>
-                    </div>
+          <motion.div key={sel.id} initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}
+            className="card" style={{ flex:1, minWidth:0, minHeight:500 }}>
+            {/* Hero */}
+            <div style={{ padding:'22px 24px', background:sel.cL, borderBottom:'1px solid var(--bdr)', position:'relative', overflow:'hidden' }}>
+              <div style={{ position:'absolute', inset:0, background:`radial-gradient(ellipse at 80% 0%, ${sel.color}25, transparent 65%)`, pointerEvents:'none' }}/>
+              <div style={{ display:'flex', flexWrap:'wrap', gap:16, justifyContent:'space-between', position:'relative' }}>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10, flexWrap:'wrap' }}>
+                    <div style={{ width:30, height:30, borderRadius:9, background:sel.color, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontWeight:700, fontSize:12, fontFamily:"'Outfit',system-ui" }}>{sel.av}</div>
+                    <span style={{ fontSize:11, color:'var(--t3)', fontFamily:"'JetBrains Mono',monospace" }}>{sel.author}</span>
+                    {sel.price===0 ? <span className="badge bd-green">Gratuit</span> : <span className="badge bd-blue">{sel.price}€/mois</span>}
+                    {sel.tags.includes('CE Certifié') && <span className="badge bd-purple"><Shield size={9}/>CE</span>}
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <AccuracyRing value={selected.accuracy} color={selected.color} />
+                  <h2 className="h2 font-heading">{sel.name}</h2>
+                  <p style={{ fontSize:13, color:'var(--t2)', marginTop:5, lineHeight:1.55, maxWidth:480 }}>{sel.desc}</p>
+                  <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginTop:10 }}>
+                    {sel.tags.map(t => <span key={t} style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:99, border:`1px solid ${sel.color}40`, color:sel.color, background:sel.color+'14' }}>{t}</span>)}
                   </div>
                 </div>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {selected.tags.map(t => (
-                    <span key={t} className="text-[10px] font-semibold px-2 py-1 rounded-lg border"
-                      style={{ borderColor: selected.color + '40', color: selected.color, background: selected.color + '15' }}>
-                      {t}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Waveform decor */}
-                <div className="mt-4 opacity-60">
-                  <WaveformDecor color={selected.color} />
+                <div style={{ display:'flex', flexDirection:'column', gap:4, alignItems:'flex-end', flexShrink:0 }}>
+                  <div style={{ fontFamily:"'Outfit',system-ui", fontSize:36, fontWeight:800, color:sel.color, lineHeight:1 }}>{sel.acc}%</div>
+                  <div style={{ fontSize:10, color:'var(--t3)', fontFamily:"'JetBrains Mono',monospace", textTransform:'uppercase' }}>Accuracy</div>
+                  <div style={{ display:'flex', alignItems:'center', gap:5, marginTop:6 }}>
+                    <Stars v={Math.round(sel.rating)}/>
+                    <span style={{ fontSize:11, color:'var(--t3)' }}>{sel.rating} ({sel.reviews})</span>
+                  </div>
+                  <div style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'var(--t3)', marginTop:2 }}>
+                    <Eye size={11}/>{sel.deploys.toLocaleString()} déploiements
+                  </div>
                 </div>
               </div>
-
-              {/* Tabs */}
-              <div className="flex border-b" style={{ borderColor: 'var(--border)' }}>
-                {(['overview','models','classes','reviews'] as const).map(tab => (
-                  <button key={tab} onClick={() => setDetailTab(tab)}
-                    className={`flex-1 py-3 text-xs font-semibold uppercase tracking-wide transition-all border-b-2 ${detailTab === tab ? 'border-electric text-electric' : 'border-transparent'}`}
-                    style={detailTab === tab ? { color: '#0d7fea', borderColor: '#0d7fea' } : { color: 'var(--text-3)' }}>
-                    {tab === 'overview' ? 'Vue d\'ensemble' : tab === 'models' ? 'Modèles' : tab === 'classes' ? 'Classes' : 'Avis'}
-                  </button>
-                ))}
-              </div>
-
-              {/* Tab content */}
-              <div className="p-6 overflow-y-auto" style={{ maxHeight: 520 }}>
-                <AnimatePresence mode="wait">
-                  <motion.div key={detailTab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-
-                    {detailTab === 'overview' && (
-                      <div className="space-y-6">
-                        <p className="text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>{selected.description}</p>
-
-                        {/* Metrics grid */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                          {[
-                            { label: 'Précision', value: selected.accuracy + '%', color: '#10b981' },
-                            { label: 'F1 Score', value: selected.f1 + '%', color: '#0d7fea' },
-                            { label: 'Précision', value: selected.precision + '%', color: '#7c3aed' },
-                            { label: 'Rappel', value: selected.recall + '%', color: '#f59e0b' },
-                          ].map(m => (
-                            <div key={m.label} className="rounded-xl p-3 text-center border"
-                              style={{ background: 'var(--bg-1)', borderColor: 'var(--border)' }}>
-                              <div className="text-xl font-display font-bold" style={{ color: m.color }}>{m.value}</div>
-                              <div className="text-[10px] font-mono mt-0.5" style={{ color: 'var(--text-3)' }}>{m.label}</div>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Technique */}
-                        <div className="rounded-xl p-4 border space-y-3" style={{ background: 'var(--bg-1)', borderColor: 'var(--border)' }}>
-                          <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Fiche Technique</p>
-                          {[
-                            { icon: Database, label: 'Dataset', value: `${selected.dataset} · ${selected.datasetSize}` },
-                            { icon: Zap, label: 'Embedding', value: selected.embedding },
-                            { icon: Cpu, label: 'Architecture', value: selected.model },
-                            { icon: BarChart2, label: 'Classes de sortie', value: `${selected.classes} classes` },
-                            { icon: Calendar, label: 'Mise à jour', value: selected.lastUpdate },
-                          ].map(row => (
-                            <div key={row.label} className="flex items-center gap-3">
-                              <row.icon size={14} style={{ color: 'var(--text-3)' }} className="shrink-0" />
-                              <span className="text-xs w-28 shrink-0" style={{ color: 'var(--text-3)' }}>{row.label}</span>
-                              <span className="text-xs font-semibold" style={{ color: 'var(--text)' }}>{row.value}</span>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* CTA */}
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <button className="btn-primary px-5 py-2.5 text-sm gap-2">
-                            <Download size={15} /> Déployer {selected.price > 0 ? `— ${selected.price}€/mois` : '— Gratuit'}
-                          </button>
-                          <button className="btn-ghost px-4 py-2.5 text-sm gap-2">
-                            <Play size={14} /> Tester dans le Prédicteur
-                          </button>
-                          <button className="btn-ghost px-4 py-2.5 text-sm gap-2">
-                            <ArrowUpRight size={14} /> Docs API
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    {detailTab === 'models' && (
-                      <div className="space-y-4">
-                        <p className="text-xs" style={{ color: 'var(--text-3)' }}>
-                          Ce portefeuille contient <strong style={{ color: 'var(--text)' }}>{selected.models.length} modèle{selected.models.length > 1 ? 's' : ''}</strong> entraîné{selected.models.length > 1 ? 's' : ''} sur le même dataset.
-                        </p>
-                        {selected.models.map((m, i) => (
-                          <div key={i} className="rounded-xl border overflow-hidden" style={{ borderColor: 'var(--border)' }}>
-                            <div className="flex items-center justify-between p-4"
-                              style={{ background: i === 0 ? selected.colorLight : 'var(--bg-1)' }}>
-                              <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold"
-                                  style={{ background: i === 0 ? selected.color : 'var(--border)' }}>
-                                  {i === 0 ? <Shield size={14} /> : <Cpu size={14} />}
-                                </div>
-                                <div>
-                                  <p className="text-sm font-bold" style={{ color: 'var(--text)' }}>{m.name}</p>
-                                  {i === 0 && <span className="text-[10px] font-bold" style={{ color: selected.color }}>Recommandé</span>}
-                                </div>
-                              </div>
-                              <button className="btn-primary text-xs py-1.5 px-3">Utiliser</button>
-                            </div>
-                            <div className="grid grid-cols-4 divide-x p-3" style={{ divideColor: 'var(--border)' }}>
-                              {[
-                                { l: 'Accuracy', v: m.accuracy + '%', c: '#10b981' },
-                                { l: 'F1 Score', v: m.f1 + '%', c: '#0d7fea' },
-                                { l: 'Taille', v: m.size, c: 'var(--text-2)' },
-                                { l: 'Latence', v: m.latency, c: '#7c3aed' },
-                              ].map(s => (
-                                <div key={s.l} className="text-center px-2">
-                                  <div className="text-sm font-bold font-mono" style={{ color: s.c }}>{s.v}</div>
-                                  <div className="text-[10px]" style={{ color: 'var(--text-3)' }}>{s.l}</div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {detailTab === 'classes' && (
-                      <div className="space-y-4">
-                        <p className="text-xs" style={{ color: 'var(--text-3)' }}>
-                          {selected.classes} classes de sortie disponibles dans ce portefeuille.
-                        </p>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                          {selected.outputClasses.map((cls, i) => (
-                            <motion.div key={cls}
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ delay: i * 0.04 }}
-                              className="flex items-center gap-2 rounded-xl p-3 border"
-                              style={{ background: 'var(--bg-1)', borderColor: 'var(--border)' }}>
-                              <div className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-[10px] font-bold shrink-0"
-                                style={{ background: selected.color }}>
-                                {String(i + 1).padStart(2, '0')}
-                              </div>
-                              <span className="text-xs font-semibold" style={{ color: 'var(--text)' }}>{cls}</span>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {detailTab === 'reviews' && (
-                      <div className="space-y-5">
-                        {/* Rating summary */}
-                        <div className="rounded-xl p-4 flex items-center gap-6 border" style={{ background: 'var(--bg-1)', borderColor: 'var(--border)' }}>
-                          <div className="text-center">
-                            <div className="text-5xl font-display font-bold" style={{ color: 'var(--text)' }}>{selected.rating}</div>
-                            <StarRating rating={selected.rating} />
-                            <div className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>{selected.reviews} avis</div>
-                          </div>
-                          <div className="flex-1 space-y-1.5">
-                            {[5,4,3,2,1].map(n => (
-                              <div key={n} className="flex items-center gap-2">
-                                <span className="text-xs w-4 text-right" style={{ color: 'var(--text-3)' }}>{n}</span>
-                                <Star size={10} className="fill-current text-warm shrink-0" />
-                                <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: 'var(--bg-2)' }}>
-                                  <div className="h-full rounded-full" style={{ background: '#f59e0b', width: n === 5 ? '65%' : n === 4 ? '22%' : n === 3 ? '8%' : '3%' }} />
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Existing reviews */}
-                        <div className="space-y-3">
-                          {(MOCK_REVIEWS[selected.id] || []).map((r, i) => (
-                            <ReviewCard key={i} {...r} />
-                          ))}
-                        </div>
-
-                        {/* Add review */}
-                        <div className="rounded-xl p-4 border space-y-3" style={{ background: 'var(--bg-1)', borderColor: 'var(--border)' }}>
-                          <p className="text-sm font-bold" style={{ color: 'var(--text)' }}>Laisser un avis</p>
-                          {/* Star picker */}
-                          <div className="flex gap-1">
-                            {[1,2,3,4,5].map(n => (
-                              <button key={n}
-                                onMouseEnter={() => setHoverRating(n)}
-                                onMouseLeave={() => setHoverRating(0)}
-                                onClick={() => setUserRating(n)}
-                                className="transition-transform hover:scale-110">
-                                <Star size={20}
-                                  className={n <= (hoverRating || userRating) ? 'fill-current text-warm' : 'text-[var(--border)]'}
-                                />
-                              </button>
-                            ))}
-                            {userRating > 0 && <span className="text-xs ml-2 self-center" style={{ color: 'var(--text-3)' }}>
-                              {['','Mauvais','Médiocre','Correct','Bien','Excellent'][userRating]}
-                            </span>}
-                          </div>
-                          <textarea
-                            className="w-full rounded-xl p-3 text-sm border outline-none resize-none"
-                            style={{ background: 'var(--bg-card)', borderColor: 'var(--border)', color: 'var(--text)', minHeight: 80 }}
-                            placeholder="Partagez votre expérience avec ce portefeuille..."
-                            value={reviewText} onChange={e => setReviewText(e.target.value)}
-                          />
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs" style={{ color: 'var(--text-3)' }}>{reviewText.length}/500</span>
-                            <button onClick={handleSubmitReview} className="btn-primary text-sm py-2 px-4 gap-2">
-                              {reviewSubmitted ? <><Check size={14} /> Publié !</> : <><MessageSquare size={14} /> Publier</>}
-                            </button>
-                          </div>
-                          {reviewSubmitted && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                              className="flex items-center gap-2 text-success text-sm">
-                              <Check size={14} /> Merci pour votre avis !
-                            </motion.div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          ) : (
-            <div className="flex-1 flex items-center justify-center rounded-2xl border"
-              style={{ background: 'var(--bg-1)', borderColor: 'var(--border)', minHeight: 400 }}>
-              <div className="text-center">
-                <Briefcase size={40} style={{ color: 'var(--text-3)' }} className="mx-auto mb-4 opacity-50" />
-                <p className="font-semibold" style={{ color: 'var(--text-2)' }}>Sélectionnez un portefeuille</p>
+              {/* Waveform */}
+              <div style={{ display:'flex', alignItems:'flex-end', gap:2, height:28, marginTop:14, opacity:.45 }}>
+                {[...Array(44)].map((_,i) => <motion.div key={i} animate={{ scaleY:[.08,.25+Math.sin(i*.45)*.75+Math.random()*.5,.08] }} transition={{ duration:.75+i*.04, repeat:Infinity, ease:'easeInOut' }} style={{ flex:1, borderRadius:2, background:sel.color, height:'100%', transformOrigin:'bottom' }}/>)}
               </div>
             </div>
-          )}
+
+            {/* Tabs */}
+            <div className="tabs">
+              {(['overview','models','classes','reviews'] as const).map(t => (
+                <button key={t} className={`tab${tab===t?' on':''}`} onClick={() => setTab(t)}>
+                  {t==='overview'?'Aperçu':t==='models'?`Modèles (${sel.models.length})`:t==='classes'?`Classes (${sel.classes})`:`Avis (${sel.reviews})`}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ padding:'22px 24px', overflowY:'auto', maxHeight:440 }}>
+              <AnimatePresence mode="wait">
+                <motion.div key={tab} initial={{ opacity:0, y:6 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}>
+                  {tab==='overview' && (
+                    <div className="section" style={{ gap:18 }}>
+                      <div className="grid-4">
+                        {[['Accuracy',sel.acc+'%'],['F1 Score',sel.f1+'%'],['Précision',sel.prec+'%'],['Rappel',sel.rec+'%']].map(([l,v]) => <div key={l} className="metric"><div className="metric-val" style={{ color:sel.color }}>{v}</div><div className="metric-lbl">{l}</div></div>)}
+                      </div>
+                      <div className="card-s" style={{ padding:'16px' }}>
+                        <div className="eyebrow" style={{ marginBottom:12 }}>Fiche Technique</div>
+                        <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                          {[['Dataset',`${sel.ds} · ${sel.dsSize}`],['Embedding',sel.emb],['Architecture',sel.arch],['Classes',`${sel.classes} classes de sortie`],['Mise à jour',sel.updated]].map(([l,v]) => (
+                            <div key={l} style={{ display:'flex', gap:10, alignItems:'flex-start' }}>
+                              <span style={{ fontSize:12, color:'var(--t3)', width:100, flexShrink:0 }}>{l}</span>
+                              <span style={{ fontSize:13, fontWeight:600, color:'var(--t1)' }}>{v}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="row" style={{ gap:8, flexWrap:'wrap' }}>
+                        <button className="btn btn-primary btn-sm"><Download size={13}/>Déployer{sel.price>0?` — ${sel.price}€/mois`:' — Gratuit'}</button>
+                        <button className="btn btn-ghost btn-sm">Tester dans le Prédicteur</button>
+                        <button className="btn btn-ghost btn-sm">Docs API</button>
+                      </div>
+                    </div>
+                  )}
+                  {tab==='models' && (
+                    <div className="section" style={{ gap:12 }}>
+                      {sel.models.map((m,i) => (
+                        <div key={i} className="card" style={{ border:`1px solid ${i===0?sel.color:'var(--bdr)'}`, overflow:'hidden' }}>
+                          <div style={{ padding:'14px 16px', background: i===0?sel.cL:'var(--s1)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                            <div className="row" style={{ gap:10 }}>
+                              <div style={{ width:32, height:32, borderRadius:9, background: i===0?sel.color:'var(--bdr)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff' }}>
+                                {i===0 ? <Shield size={14}/> : <Cpu size={14}/>}
+                              </div>
+                              <div>
+                                <div style={{ fontSize:14, fontWeight:700, color:'var(--t1)' }}>{m.name}</div>
+                                {i===0 && <div style={{ fontSize:10, fontWeight:700, color:sel.color }}>Recommandé</div>}
+                              </div>
+                            </div>
+                            <button className="btn btn-primary btn-xs">Utiliser</button>
+                          </div>
+                          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', padding:'12px 16px', gap:8 }}>
+                            {[['Accuracy',m.acc+'%','#22c55e'],['F1',m.f1+'%','#3b6fe8'],['Taille',m.size,'var(--t2)'],['Latence',m.lat,'#8b5cf6']].map(([l,v,c]) => (
+                              <div key={l} style={{ textAlign:'center' }}>
+                                <div style={{ fontSize:15, fontWeight:700, color:c, fontFamily:"'JetBrains Mono',monospace" }}>{v}</div>
+                                <div style={{ fontSize:10, color:'var(--t3)', textTransform:'uppercase', letterSpacing:'.06em', marginTop:2 }}>{l}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {tab==='classes' && (
+                    <div className="section" style={{ gap:12 }}>
+                      <p className="sub">{sel.classes} classes de sortie disponibles.</p>
+                      <div className="grid-3">
+                        {sel.outClasses.map((cls,i) => (
+                          <motion.div key={cls} initial={{ opacity:0, scale:.9 }} animate={{ opacity:1, scale:1 }} transition={{ delay:i*.02 }}
+                            className="card-s" style={{ padding:'10px 12px', display:'flex', alignItems:'center', gap:8 }}>
+                            <div style={{ width:22, height:22, borderRadius:7, background:sel.color, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:9, fontWeight:700, flexShrink:0 }}>{i+1}</div>
+                            <span style={{ fontSize:12, fontWeight:600, color:'var(--t1)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cls}</span>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {tab==='reviews' && (
+                    <div className="section" style={{ gap:14 }}>
+                      {/* Summary */}
+                      <div className="card-s" style={{ padding:'16px', display:'flex', alignItems:'center', gap:20, flexWrap:'wrap' }}>
+                        <div style={{ textAlign:'center' }}>
+                          <div className="font-heading" style={{ fontSize:44, fontWeight:800, color:'var(--t1)', lineHeight:1 }}>{sel.rating}</div>
+                          <Stars v={Math.round(sel.rating)}/><div style={{ fontSize:11, color:'var(--t3)', marginTop:4 }}>{sel.reviews} avis</div>
+                        </div>
+                        <div style={{ flex:1, display:'flex', flexDirection:'column', gap:5 }}>
+                          {[5,4,3,2,1].map(n => <div key={n} style={{ display:'flex', alignItems:'center', gap:7 }}>
+                            <span style={{ fontSize:11, color:'var(--t3)', width:10 }}>{n}</span>
+                            <Star size={10} fill="#f59e0b" color="#f59e0b"/>
+                            <div style={{ flex:1, height:5, borderRadius:99, background:'var(--bdr2)', overflow:'hidden' }}>
+                              <div style={{ height:'100%', background:'#f59e0b', borderRadius:99, width:n===5?'62%':n===4?'24%':n===3?'9%':'5%' }}/>
+                            </div>
+                          </div>)}
+                        </div>
+                      </div>
+                      {/* Reviews */}
+                      {sel.revs.map((r,i) => (
+                        <div key={i} className="card-s" style={{ padding:'14px 16px' }}>
+                          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8, flexWrap:'wrap', gap:6 }}>
+                            <div className="row" style={{ gap:8 }}>
+                              <div style={{ width:28, height:28, borderRadius:8, background:`linear-gradient(135deg,var(--accent),#8b5cf6)`, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:11, fontWeight:700 }}>{r.a[0]}</div>
+                              <span style={{ fontSize:13, fontWeight:600, color:'var(--t1)' }}>{r.a}</span>
+                            </div>
+                            <Stars v={r.s}/>
+                          </div>
+                          <p style={{ fontSize:13, color:'var(--t3)', lineHeight:1.55, margin:0 }}>{r.t}</p>
+                          <div style={{ display:'flex', justifyContent:'space-between', marginTop:8 }}>
+                            <span style={{ fontSize:11, color:'var(--t4)', fontFamily:"'JetBrains Mono',monospace" }}>{r.d}</span>
+                            <button style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'var(--t3)', background:'none', border:'none', cursor:'pointer' }}><ThumbsUp size={11}/>Utile</button>
+                          </div>
+                        </div>
+                      ))}
+                      {/* Add review */}
+                      <div className="card-s" style={{ padding:'16px' }}>
+                        <div className="h3" style={{ marginBottom:12 }}>Laisser un avis</div>
+                        <div style={{ display:'flex', gap:3, marginBottom:10 }}>
+                          {[1,2,3,4,5].map(n => <button key={n} onClick={() => setRstars(n)} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', padding:0 }}><Star size={20} fill={n<=rstars?'#f59e0b':'none'} color={n<=rstars?'#f59e0b':'var(--bdr)'}/></button>)}
+                        </div>
+                        <textarea className="input" value={rtxt} onChange={e => setRtxt(e.target.value)} placeholder="Votre expérience…" style={{ marginBottom:10 }}/>
+                        <div style={{ display:'flex', justifyContent:'flex-end' }}>
+                          <button onClick={() => { if(!rstars||!rtxt.trim())return; setRsent(true); setTimeout(()=>{setRsent(false);setRstars(0);setRtxt('');},2000); }} className="btn btn-primary btn-sm">
+                            {rsent ? <><Check size={13}/>Publié !</> : <><MessageSquare size={13}/>Publier</>}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </motion.div>
         </AnimatePresence>
       </div>
     </div>

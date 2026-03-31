@@ -1,144 +1,100 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  BarChart2, User, FileText, HelpCircle, CreditCard, ShieldCheck, MessageSquare, Rocket,
-  TrendingUp, Activity, Zap, Target, Clock, ArrowUpRight, Download, Bell, Key, Globe,
-  Shield, Mail, Camera, Edit3, Check, Star, Cpu, Database, Layers, ThumbsUp, Hash,
-  Calendar, Award, GitBranch, Eye, ChevronRight, Code, BookOpen, Play
-} from 'lucide-react';
+import { BarChart2, User, CreditCard, ShieldCheck, MessageSquare, Rocket, Activity, Zap, Target, ArrowUpRight, Key, Shield, Camera, Edit3, Check, Star, Cpu, Award, Code, BookOpen } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { useTheme } from '../context/ThemeContext';
 
-/* ── Analytics ───────────────────────────────────────────────────────── */
 const weekData = [
-  { day: 'Lun', predictions: 420, latency: 18, acc: 91 },
-  { day: 'Mar', predictions: 380, latency: 22, acc: 89 },
-  { day: 'Mer', predictions: 610, latency: 16, acc: 93 },
-  { day: 'Jeu', predictions: 820, latency: 14, acc: 94 },
-  { day: 'Ven', predictions: 540, latency: 19, acc: 92 },
-  { day: 'Sam', predictions: 920, latency: 12, acc: 95 },
-  { day: 'Dim', predictions: 710, latency: 15, acc: 94 },
+  { day:'Lun', pred:420, lat:18, acc:91 },{ day:'Mar', pred:380, lat:22, acc:89 },
+  { day:'Mer', pred:610, lat:16, acc:93 },{ day:'Jeu', pred:820, lat:14, acc:94 },
+  { day:'Ven', pred:540, lat:19, acc:92 },{ day:'Sam', pred:920, lat:12, acc:95 },
+  { day:'Dim', pred:710, lat:15, acc:94 },
 ];
-const modelUsage = [
-  { name: 'RespiDiag', value: 32, color: '#10b981' },
-  { name: 'BabyCry-AI', value: 28, color: '#7c3aed' },
-  { name: 'VibraPredict', value: 20, color: '#2563eb' },
-  { name: 'AfroBeatsID', value: 13, color: '#f59e0b' },
-  { name: 'AgriSound', value: 7, color: '#06b6d4' },
+const pieData = [
+  { name:'RespiDiag', value:32, color:'#22c55e' },{ name:'BabyCry-AI', value:28, color:'#8b5cf6' },
+  { name:'VibraPredict', value:20, color:'#3b6fe8' },{ name:'AfroBeatsID', value:13, color:'#f59e0b' },
+  { name:'AgriSound', value:7, color:'#06b6d4' },
 ];
-
-function StatCard({ label, value, sub, icon: Icon, color, trend }: any) {
-  return (
-    <div className="card p-5 space-y-3 card-glow">
-      <div className="flex items-center justify-between">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: color + '18' }}>
-          <Icon size={18} style={{ color }} />
-        </div>
-        {trend && <span className="badge badge-green"><ArrowUpRight size={10} />{trend}</span>}
-      </div>
-      <div>
-        <div className="font-display text-2xl font-bold" style={{ color: 'var(--text)' }}>{value}</div>
-        <div className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{label}</div>
-        {sub && <div className="text-xs font-mono" style={{ color: 'var(--text-3)' }}>{sub}</div>}
-      </div>
-    </div>
-  );
-}
 
 export const Analytics = () => {
   const { isDark } = useTheme();
+  const gc = isDark ? '#1e3050' : '#dde6f5'; const tc = isDark ? '#506080' : '#8090b0';
   const [period, setPeriod] = useState('week');
-  const gridColor = isDark ? '#1a2a4a' : '#e0e8f5';
-  const textColor = isDark ? '#4a6080' : '#8090b0';
   return (
-    <div className="animate-fade-in space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div>
-          <span className="section-label flex items-center gap-2 mb-1"><BarChart2 size={14} style={{ color: '#2563eb' }} />Analytics</span>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: 'var(--text)' }}>Tableau d'<span style={{ color: '#2563eb' }}>Analyse</span></h1>
+    <div className="page-wrap fade-in">
+      <div className="row-between">
+        <div className="col" style={{ gap:4 }}>
+          <div className="eyebrow"><BarChart2 size={13} color="var(--accent)"/>Analytics</div>
+          <h1 className="h1 font-heading">Tableau d'<span className="text-accent">Analyse</span></h1>
         </div>
-        <div className="flex gap-1 p-1 rounded-xl border" style={{ background: 'var(--bg-1)', borderColor: 'var(--border)' }}>
+        <div style={{ display:'flex', gap:4, padding:4, borderRadius:12, border:'1px solid var(--bdr)', background:'var(--s1)' }}>
           {['week','month','year'].map(p => (
-            <button key={p} onClick={() => setPeriod(p)} className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-              style={period === p ? { background: '#2563eb', color: '#fff' } : { color: 'var(--text-3)' }}>
-              {p === 'week' ? 'Semaine' : p === 'month' ? 'Mois' : 'Année'}
+            <button key={p} onClick={() => setPeriod(p)} className="btn btn-sm"
+              style={{ background: p===period?'var(--accent)':'transparent', color: p===period?'#fff':'var(--t3)', border:'none', boxShadow: p===period?'0 2px 8px rgba(59,111,232,.38)':'none' }}>
+              {p==='week'?'Semaine':p==='month'?'Mois':'Année'}
             </button>
           ))}
         </div>
       </div>
-
-      {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Prédictions totales" value="42.8K" trend="+18%" icon={Activity} color="#2563eb" />
-        <StatCard label="Précision moyenne" value="92.4%" trend="+1.2%" icon={Target} color="#10b981" />
-        <StatCard label="Latence médiane" value="16ms" trend="-3ms" icon={Zap} color="#f59e0b" />
-        <StatCard label="Modèles actifs" value="8" sub="3 en cours d'entraînement" icon={Cpu} color="#7c3aed" />
+      <div className="grid-4">
+        {[
+          { l:'Prédictions totales', v:'42.8K', t:'+18%', i:Activity,  c:'#3b6fe8', bg:'rgba(59,111,232,.1)' },
+          { l:'Précision moyenne',   v:'92.4%', t:'+1.2%',i:Target,    c:'#22c55e', bg:'rgba(34,197,94,.1)' },
+          { l:'Latence médiane',     v:'16ms',  t:'-3ms', i:Zap,       c:'#f59e0b', bg:'rgba(245,158,11,.1)' },
+          { l:'Modèles actifs',      v:'8',     t:'+3',   i:Cpu,       c:'#8b5cf6', bg:'rgba(139,92,246,.1)' },
+        ].map((k,i) => (
+          <motion.div key={i} whileHover={{ y:-3 }} className="card card-p card-hover" style={{ display:'flex', flexDirection:'column', gap:14 }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+              <div style={{ width:38, height:38, borderRadius:11, background:k.bg, display:'flex', alignItems:'center', justifyContent:'center' }}><k.i size={19} color={k.c}/></div>
+              <span className="badge bd-green" style={{ fontSize:10 }}><ArrowUpRight size={9}/>{k.t}</span>
+            </div>
+            <div>
+              <div className="font-heading" style={{ fontSize:26, fontWeight:700, color:'var(--t1)' }}>{k.v}</div>
+              <div style={{ fontSize:12, color:'var(--t3)', marginTop:3 }}>{k.l}</div>
+            </div>
+          </motion.div>
+        ))}
       </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 card p-5">
-          <div className="flex items-center justify-between mb-4">
-            <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>Prédictions par jour</p>
-            <span className="section-label">Cette semaine</span>
-          </div>
-          <div style={{ height: 220 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr', gap:16 }}>
+        <div className="card card-p2">
+          <div className="h3" style={{ marginBottom:16 }}>Prédictions par jour</div>
+          <div style={{ height:200 }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={weekData}>
-                <defs>
-                  <linearGradient id="grad1" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: textColor, fontSize: 11 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: textColor, fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)' }} />
-                <Area type="monotone" dataKey="predictions" stroke="#2563eb" strokeWidth={2.5} fill="url(#grad1)" />
+                <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="var(--accent)" stopOpacity={.2}/><stop offset="95%" stopColor="var(--accent)" stopOpacity={0}/></linearGradient></defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gc}/>
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill:tc, fontSize:11 }}/>
+                <YAxis axisLine={false} tickLine={false} tick={{ fill:tc, fontSize:11 }}/>
+                <Tooltip contentStyle={{ background:'var(--card)', border:'1px solid var(--bdr)', borderRadius:12, color:'var(--t1)', fontSize:12 }}/>
+                <Area type="monotone" dataKey="pred" stroke="var(--accent)" strokeWidth={2.5} fill="url(#ag)"/>
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="card p-5">
-          <p className="font-bold text-sm mb-4" style={{ color: 'var(--text)' }}>Usage par modèle</p>
-          <div style={{ height: 180 }}>
+        <div className="card card-p">
+          <div className="h3" style={{ marginBottom:14 }}>Usage par modèle</div>
+          <div style={{ height:160 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={modelUsage} cx="50%" cy="50%" innerRadius={48} outerRadius={72} paddingAngle={3} dataKey="value">
-                  {modelUsage.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                </Pie>
-                <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)' }} />
-              </PieChart>
+              <PieChart><Pie data={pieData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={3} dataKey="value">{pieData.map((e,i) => <Cell key={i} fill={e.color}/>)}</Pie><Tooltip contentStyle={{ background:'var(--card)', border:'1px solid var(--bdr)', borderRadius:10, color:'var(--t1)', fontSize:11 }}/></PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="space-y-2 mt-2">
-            {modelUsage.map(m => (
-              <div key={m.name} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full" style={{ background: m.color }} />
-                  <span style={{ color: 'var(--text-2)' }}>{m.name}</span>
-                </div>
-                <span className="font-mono font-bold" style={{ color: 'var(--text)' }}>{m.value}%</span>
-              </div>
-            ))}
+          <div style={{ display:'flex', flexDirection:'column', gap:6, marginTop:8 }}>
+            {pieData.map(m => <div key={m.name} style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}><div style={{ display:'flex', alignItems:'center', gap:7 }}><div style={{ width:7, height:7, borderRadius:'50%', background:m.color }}/><span style={{ fontSize:12, color:'var(--t2)' }}>{m.name}</span></div><span style={{ fontSize:12, fontWeight:700, color:'var(--t1)', fontFamily:"'JetBrains Mono',monospace" }}>{m.value}%</span></div>)}
           </div>
         </div>
       </div>
-
-      {/* Latency + Accuracy bars */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {[{ key: 'latency', label: 'Latence (ms)', color: '#f59e0b' }, { key: 'acc', label: 'Précision (%)', color: '#10b981' }].map(({ key, label, color }) => (
-          <div key={key} className="card p-5">
-            <p className="font-bold text-sm mb-4" style={{ color: 'var(--text)' }}>{label}</p>
-            <div style={{ height: 160 }}>
+      <div className="grid-2">
+        {[{ key:'lat', label:'Latence (ms)', color:'#f59e0b' },{ key:'acc', label:'Précision (%)', color:'#22c55e' }].map(({ key, label, color }) => (
+          <div key={key} className="card card-p">
+            <div className="h3" style={{ marginBottom:14 }}>{label}</div>
+            <div style={{ height:150 }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={weekData} barSize={24}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
-                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: textColor, fontSize: 11 }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: textColor, fontSize: 11 }} />
-                  <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)' }} />
-                  <Bar dataKey={key} fill={color} radius={[6, 6, 0, 0]} />
+                <BarChart data={weekData} barSize={22}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gc}/>
+                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill:tc, fontSize:11 }}/>
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill:tc, fontSize:11 }}/>
+                  <Tooltip contentStyle={{ background:'var(--card)', border:'1px solid var(--bdr)', borderRadius:10, color:'var(--t1)', fontSize:11 }}/>
+                  <Bar dataKey={key} fill={color} radius={[6,6,0,0]}/>
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -149,166 +105,147 @@ export const Analytics = () => {
   );
 };
 
-/* ── Profile ─────────────────────────────────────────────────────────── */
+function Toggle({ on, setOn }: { on:boolean; setOn:(v:boolean)=>void }) {
+  return (
+    <label className="toggle">
+      <input type="checkbox" checked={on} onChange={e => setOn(e.target.checked)}/>
+      <span className="toggle-track"/>
+    </label>
+  );
+}
+
 export const Profile = () => {
-  const [tab, setTab] = useState<'profile'|'api'|'notifications'|'security'>('profile');
+  const [tab, setTab] = useState<'profile'|'api'|'notifs'|'security'>('profile');
   const [saved, setSaved] = useState(false);
   const [name, setName] = useState('Michael Nzuzi');
-  const [bio, setBio] = useState('Ingénieur ML spécialisé en traitement du signal audio et classification. Passionné par l\'IA africaine.');
-  const save = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
-
+  const [bio, setBio] = useState("Ingénieur ML spécialisé en traitement du signal audio. Passionné par l'IA africaine.");
+  const [n1,setN1]=useState(true);const [n2,setN2]=useState(true);const [n3,setN3]=useState(false);const [n4,setN4]=useState(true);
+  const [fa,setFa]=useState(false);
   return (
-    <div className="animate-fade-in space-y-5 max-w-4xl">
-      <div>
-        <span className="section-label flex items-center gap-2 mb-1"><User size={14} style={{ color: '#2563eb' }} />Profil</span>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: 'var(--text)' }}>Mon <span style={{ color: '#2563eb' }}>Compte</span></h1>
+    <div className="page-wrap fade-in" style={{ maxWidth:820 }}>
+      <div className="col" style={{ gap:4 }}>
+        <div className="eyebrow"><User size={13} color="var(--accent)"/>Profil</div>
+        <h1 className="h1 font-heading">Mon <span className="text-accent">Compte</span></h1>
       </div>
-
       {/* Avatar card */}
-      <div className="card p-5 flex flex-col sm:flex-row items-center gap-5">
-        <div className="relative shrink-0">
-          <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-white text-3xl font-bold" style={{ background: 'linear-gradient(135deg,#2563eb,#7c3aed)' }}>M</div>
-          <button className="absolute -bottom-1.5 -right-1.5 w-7 h-7 rounded-lg bg-electric flex items-center justify-center text-white shadow-lg">
-            <Camera size={13} />
-          </button>
+      <div className="card card-p" style={{ display:'flex', flexWrap:'wrap', alignItems:'center', gap:20 }}>
+        <div style={{ position:'relative', flexShrink:0 }}>
+          <div style={{ width:70, height:70, borderRadius:16, background:'linear-gradient(135deg,#3b6fe8,#8b5cf6)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:28, fontWeight:800, fontFamily:"'Outfit',system-ui" }}>M</div>
+          <button style={{ position:'absolute', bottom:-3, right:-3, width:24, height:24, borderRadius:8, background:'var(--accent)', border:'2px solid var(--card)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}><Camera size={11} color="#fff"/></button>
         </div>
-        <div className="flex-1 text-center sm:text-left">
-          <p className="font-display font-bold text-xl" style={{ color: 'var(--text)' }}>{name}</p>
-          <p className="text-sm" style={{ color: 'var(--text-3)' }}>michael.nzuzi@audioclass.ai</p>
-          <div className="flex flex-wrap gap-2 mt-2 justify-center sm:justify-start">
-            <span className="badge badge-blue"><Star size={9} />Pro Plan</span>
-            <span className="badge badge-purple"><Award size={9} />ML Engineer</span>
-            <span className="badge badge-green"><Check size={9} />Vérifié</span>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div className="font-heading" style={{ fontSize:20, fontWeight:700, color:'var(--t1)' }}>{name}</div>
+          <div style={{ fontSize:13, color:'var(--t3)', marginTop:2 }}>michael.nzuzi@audioclass.ai</div>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:8 }}>
+            <span className="badge bd-blue"><Star size={9}/>Pro Plan</span>
+            <span className="badge bd-purple"><Award size={9}/>ML Engineer</span>
+            <span className="badge bd-green"><Check size={9}/>Vérifié</span>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-4 text-center">
-          {[['8', 'Modèles'], ['23', 'Datasets'], ['47K', 'Prédictions']].map(([v, l]) => (
-            <div key={l}><div className="font-display font-bold text-xl" style={{ color: '#2563eb' }}>{v}</div><div className="text-[10px]" style={{ color: 'var(--text-3)' }}>{l}</div></div>
+        <div style={{ display:'flex', gap:24, flexShrink:0 }}>
+          {[['8','Modèles'],['23','Datasets'],['47K','Prédictions']].map(([v,l]) => (
+            <div key={l} style={{ textAlign:'center' }}>
+              <div className="font-heading" style={{ fontSize:22, fontWeight:700, color:'var(--accent)' }}>{v}</div>
+              <div style={{ fontSize:11, color:'var(--t3)', marginTop:2 }}>{l}</div>
+            </div>
           ))}
         </div>
       </div>
-
-      {/* Tabs */}
-      <div className="flex gap-0 border-b" style={{ borderColor: 'var(--border)' }}>
-        {[['profile','Profil'],['api','Clés API'],['notifications','Notifications'],['security','Sécurité']].map(([k, l]) => (
-          <button key={k} onClick={() => setTab(k as any)}
-            className={`px-4 py-2.5 text-xs font-semibold transition-all border-b-2 ${tab === k ? 'tab-active' : 'border-transparent'}`}
-            style={{ color: tab === k ? '#2563eb' : 'var(--text-3)' }}>{l}</button>
+      <div className="tabs">
+        {[['profile','Profil'],['api','Clés API'],['notifs','Notifications'],['security','Sécurité']].map(([k,l]) => (
+          <button key={k} className={`tab${tab===k?' on':''}`} onClick={() => setTab(k as any)}>{l}</button>
         ))}
       </div>
-
       <AnimatePresence mode="wait">
-        <motion.div key={tab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-          {tab === 'profile' && (
-            <div className="card p-5 space-y-4">
-              <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>Informations personnelles</p>
-              {[['Nom complet', name, setName],['Email','michael.nzuzi@audioclass.ai',undefined],['Organisation','AudioClass Labs',undefined]].map(([lbl, val, fn]) => (
-                <div key={lbl as string} className="space-y-1">
-                  <label className="text-xs font-semibold" style={{ color: 'var(--text-2)' }}>{lbl as string}</label>
-                  <input className="input-base" value={val as string} onChange={fn ? (e: any) => (fn as any)(e.target.value) : undefined} readOnly={!fn} />
+        <motion.div key={tab} initial={{ opacity:0, y:6 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}>
+          <div className="card card-p2">
+            {tab==='profile' && (
+              <div className="section" style={{ gap:14 }}>
+                <div className="h3">Informations personnelles</div>
+                {[['Nom complet',name,(v:string)=>setName(v)],['Email','michael.nzuzi@audioclass.ai',null],['Organisation','AudioClass Labs',null]].map(([lbl,val,fn]:[string,string,any]) => (
+                  <div key={lbl} className="col" style={{ gap:5 }}>
+                    <label style={{ fontSize:12, fontWeight:600, color:'var(--t2)' }}>{lbl}</label>
+                    <input className="input" value={val} readOnly={!fn} onChange={fn?e=>fn(e.target.value):undefined}/>
+                  </div>
+                ))}
+                <div className="col" style={{ gap:5 }}>
+                  <label style={{ fontSize:12, fontWeight:600, color:'var(--t2)' }}>Bio</label>
+                  <textarea className="input" value={bio} onChange={e=>setBio(e.target.value)}/>
                 </div>
-              ))}
-              <div className="space-y-1">
-                <label className="text-xs font-semibold" style={{ color: 'var(--text-2)' }}>Bio</label>
-                <textarea className="input-base resize-none" style={{ minHeight: 80 }} value={bio} onChange={e => setBio(e.target.value)} />
+                <div className="col" style={{ gap:5 }}>
+                  <label style={{ fontSize:12, fontWeight:600, color:'var(--t2)' }}>Spécialité ML</label>
+                  <select className="input"><option>Audio & Signal Processing</option><option>Computer Vision</option><option>NLP</option></select>
+                </div>
+                <button onClick={() => { setSaved(true); setTimeout(()=>setSaved(false),2000); }} className="btn btn-primary btn-sm" style={{ alignSelf:'flex-start' }}>
+                  {saved?<><Check size={13}/>Sauvegardé</>:<><Edit3 size={13}/>Sauvegarder</>}
+                </button>
               </div>
-              <div className="space-y-1">
-                <label className="text-xs font-semibold" style={{ color: 'var(--text-2)' }}>Spécialité ML</label>
-                <select className="input-base"><option>Audio & Signal Processing</option><option>Computer Vision</option><option>NLP</option></select>
-              </div>
-              <button onClick={save} className="btn-primary text-sm py-2 px-4 gap-2">
-                {saved ? <><Check size={14} />Sauvegardé</> : <><Edit3 size={14} />Sauvegarder</>}
-              </button>
-            </div>
-          )}
-          {tab === 'api' && (
-            <div className="card p-5 space-y-4">
-              <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>Clés API</p>
-              {[['Production','sk-prod-••••••••••••••••••••abc123','2025-12-31'],['Development','sk-dev-••••••••••••••••••••xyz789','2025-06-30']].map(([env, key, exp]) => (
-                <div key={env as string} className="rounded-xl p-4 border space-y-2" style={{ background: 'var(--bg-1)', borderColor: 'var(--border)' }}>
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <span className="font-semibold text-sm" style={{ color: 'var(--text)' }}>{env as string}</span>
-                    <div className="flex gap-2">
-                      <span className="badge badge-green">Active</span>
-                      <button className="text-xs text-electric hover:underline">Renouveler</button>
+            )}
+            {tab==='api' && (
+              <div className="section" style={{ gap:14 }}>
+                <div className="h3">Clés API</div>
+                {[['Production','sk-prod-••••••••••••abc123','2025-12-31','4 200'],['Development','sk-dev-••••••••••••xyz789','2025-06-30','1 800']].map(([env,key,exp,calls]) => (
+                  <div key={env} className="card-s" style={{ padding:'14px 16px' }}>
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:8, marginBottom:10 }}>
+                      <span style={{ fontSize:13, fontWeight:700, color:'var(--t1)' }}>{env}</span>
+                      <div className="row" style={{ gap:8 }}><span className="badge bd-green">Active</span><button style={{ fontSize:12, color:'var(--accent)', background:'none', border:'none', cursor:'pointer', fontFamily:'inherit' }}>Renouveler</button></div>
                     </div>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, background:'var(--bg)', borderRadius:8, padding:'7px 10px' }}>
+                      <Key size={12} color="var(--t3)"/><span style={{ flex:1, fontSize:12, color:'var(--t3)', fontFamily:"'JetBrains Mono',monospace", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{key}</span>
+                      <button style={{ fontSize:11, color:'var(--accent)', background:'none', border:'none', cursor:'pointer', flexShrink:0, fontFamily:'inherit' }}>Copier</button>
+                    </div>
+                    <div style={{ fontSize:11, color:'var(--t3)', marginTop:7, fontFamily:"'JetBrains Mono',monospace" }}>Expire le {exp} · {calls} appels restants</div>
                   </div>
-                  <div className="flex items-center gap-2 rounded-lg px-3 py-2 font-mono text-xs" style={{ background: 'var(--bg-2)', color: 'var(--text-3)' }}>
-                    <Key size={12} />
-                    <span className="flex-1 truncate">{key as string}</span>
-                    <button className="text-electric hover:opacity-70">Copier</button>
-                  </div>
-                  <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>Expire le {exp as string} · 4 200 appels restants</p>
-                </div>
-              ))}
-              <button className="btn-ghost text-sm py-2 px-4 gap-2"><Key size={14} />Générer une nouvelle clé</button>
-            </div>
-          )}
-          {tab === 'notifications' && (
-            <div className="card p-5 space-y-4">
-              <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>Préférences de notification</p>
-              {[['Fin d\'entraînement','Notifier quand un modèle termine',true],['Erreurs de prédiction','Alertes si précision < seuil',true],['Newsletter','Nouveautés et mises à jour',false],['Digest hebdo','Résumé des performances',true]].map(([lbl, desc, def]) => (
-                <div key={lbl as string} className="flex items-center justify-between gap-4 p-3 rounded-xl border" style={{ background: 'var(--bg-1)', borderColor: 'var(--border)' }}>
-                  <div>
-                    <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{lbl as string}</p>
-                    <p className="text-xs" style={{ color: 'var(--text-3)' }}>{desc as string}</p>
-                  </div>
-                  <ToggleSwitch defaultOn={def as boolean} />
-                </div>
-              ))}
-            </div>
-          )}
-          {tab === 'security' && (
-            <div className="card p-5 space-y-4">
-              <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>Sécurité du compte</p>
-              {[['Mot de passe actuel',''],['Nouveau mot de passe',''],['Confirmer','']].map(([lbl]) => (
-                <div key={lbl as string} className="space-y-1">
-                  <label className="text-xs font-semibold" style={{ color: 'var(--text-2)' }}>{lbl as string}</label>
-                  <input type="password" className="input-base" placeholder="••••••••" />
-                </div>
-              ))}
-              <div className="flex items-center justify-between p-3 rounded-xl border" style={{ background: 'var(--bg-1)', borderColor: 'var(--border)' }}>
-                <div>
-                  <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Authentification 2FA</p>
-                  <p className="text-xs" style={{ color: 'var(--text-3)' }}>Sécurité renforcée via Google Authenticator</p>
-                </div>
-                <ToggleSwitch defaultOn={false} />
+                ))}
+                <button className="btn btn-ghost btn-sm" style={{ alignSelf:'flex-start' }}><Key size={13}/>Générer une nouvelle clé</button>
               </div>
-              <button className="btn-primary text-sm py-2 px-4 gap-2"><Shield size={14} />Mettre à jour</button>
-            </div>
-          )}
+            )}
+            {tab==='notifs' && (
+              <div className="section" style={{ gap:10 }}>
+                <div className="h3">Préférences de notification</div>
+                {[["Fin d'entraînement","Notifier quand un modèle termine",n1,setN1],["Erreurs","Alertes si précision < seuil",n2,setN2],["Newsletter","Nouveautés et mises à jour",n3,setN3],["Digest hebdo","Résumé des performances",n4,setN4]].map(([lbl,desc,val,set]:[string,string,boolean,(v:boolean)=>void]) => (
+                  <div key={lbl} className="card-s" style={{ padding:'12px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:12 }}>
+                    <div><div style={{ fontSize:13, fontWeight:600, color:'var(--t1)' }}>{lbl}</div><div style={{ fontSize:12, color:'var(--t3)', marginTop:2 }}>{desc}</div></div>
+                    <Toggle on={val} setOn={set}/>
+                  </div>
+                ))}
+              </div>
+            )}
+            {tab==='security' && (
+              <div className="section" style={{ gap:14 }}>
+                <div className="h3">Sécurité du compte</div>
+                {['Mot de passe actuel','Nouveau mot de passe','Confirmer'].map(lbl => (
+                  <div key={lbl} className="col" style={{ gap:5 }}>
+                    <label style={{ fontSize:12, fontWeight:600, color:'var(--t2)' }}>{lbl}</label>
+                    <input type="password" className="input" placeholder="••••••••"/>
+                  </div>
+                ))}
+                <div className="card-s" style={{ padding:'12px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:12 }}>
+                  <div><div style={{ fontSize:13, fontWeight:600, color:'var(--t1)' }}>Authentification 2FA</div><div style={{ fontSize:12, color:'var(--t3)', marginTop:2 }}>Sécurité renforcée via Google Authenticator</div></div>
+                  <Toggle on={fa} setOn={setFa}/>
+                </div>
+                <button className="btn btn-primary btn-sm" style={{ alignSelf:'flex-start' }}><Shield size={13}/>Mettre à jour</button>
+              </div>
+            )}
+          </div>
         </motion.div>
       </AnimatePresence>
     </div>
   );
 };
 
-function ToggleSwitch({ defaultOn }: { defaultOn: boolean }) {
-  const [on, setOn] = useState(defaultOn);
-  return (
-    <button onClick={() => setOn(v => !v)} className={`w-10 h-6 rounded-full relative transition-all shrink-0 ${on ? 'bg-electric' : 'bg-[var(--border)]'}`}>
-      <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${on ? 'left-5' : 'left-1'}`} />
-    </button>
-  );
-}
-
-/* ── Stubs ── */
-const Stub = ({ title, icon: Icon, desc }: any) => (
-  <div className="animate-fade-in flex items-center justify-center min-h-[50vh]">
-    <div className="card p-10 text-center max-w-sm w-full space-y-4">
-      <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto" style={{ background: 'rgba(37,99,235,.1)' }}>
-        <Icon size={28} style={{ color: '#2563eb' }} />
-      </div>
-      <h2 className="font-display text-xl font-bold" style={{ color: 'var(--text)' }}>{title}</h2>
-      <p className="text-sm" style={{ color: 'var(--text-3)' }}>{desc}</p>
-      <button className="btn-primary w-full text-sm py-2.5">Accéder</button>
+const Stub = ({ title, icon:Icon, desc }: { title:string; icon:any; desc:string }) => (
+  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}>
+    <div className="card card-p2" style={{ maxWidth:360, width:'100%', textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', gap:16 }}>
+      <div style={{ width:60, height:60, borderRadius:16, background:'rgba(59,111,232,.1)', display:'flex', alignItems:'center', justifyContent:'center' }}><Icon size={28} color="var(--accent)"/></div>
+      <div><h2 className="h2 font-heading" style={{ marginBottom:6 }}>{title}</h2><p className="sub">{desc}</p></div>
+      <button className="btn btn-primary" style={{ width:'100%', justifyContent:'center' }}>Accéder</button>
     </div>
   </div>
 );
-
-export const APIDocs   = () => <Stub title="Documentation API" icon={Code} desc="Explorez notre API REST avec Swagger. Intégrez AudioClass AI dans vos applications." />;
-export const HelpCenter= () => <Stub title="Centre d'Aide" icon={BookOpen} desc="Tutoriels et guides pour tirer le meilleur parti de la plateforme." />;
-export const Billing   = () => <Stub title="Facturation" icon={CreditCard} desc="Gérez vos abonnements et méthodes de paiement." />;
-export const Admin     = () => <Stub title="Administration" icon={ShieldCheck} desc="Modération et statistiques (réservé aux administrateurs)." />;
-export const Forum     = () => <Stub title="Communauté" icon={MessageSquare} desc="Échangez avec d'autres ingénieurs et partagez vos modèles." />;
-export const Onboarding= () => <Stub title="Bienvenue !" icon={Rocket} desc="Suivez notre guide rapide pour configurer votre premier modèle." />;
+export const APIDocs    = () => <Stub title="Documentation API" icon={Code} desc="Explorez notre API REST. Intégrez AudioClass AI dans vos applications."/>;
+export const HelpCenter = () => <Stub title="Centre d'Aide" icon={BookOpen} desc="Tutoriels et guides pour tirer le meilleur parti de la plateforme."/>;
+export const Billing    = () => <Stub title="Facturation" icon={CreditCard} desc="Gérez vos abonnements et méthodes de paiement."/>;
+export const Admin      = () => <Stub title="Administration" icon={ShieldCheck} desc="Modération et statistiques réservées aux administrateurs."/>;
+export const Forum      = () => <Stub title="Communauté" icon={MessageSquare} desc="Échangez avec d'autres ingénieurs et partagez vos modèles."/>;
+export const Onboarding = () => <Stub title="Bienvenue !" icon={Rocket} desc="Suivez notre guide rapide pour configurer votre premier modèle."/>;
