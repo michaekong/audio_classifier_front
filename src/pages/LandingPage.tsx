@@ -203,7 +203,7 @@ export const LandingPage: React.FC = () => {
       {/* Testimonials */}
       <section style={{ padding:'72px 24px', maxWidth:700, margin:'0 auto' }}>
         <div style={{ textAlign:'center', marginBottom:36 }}>
-          <h2 style={{ fontFamily:"'Outfit',system-ui", fontSize:'clamp(24px,3vw,32px)', fontWeight:800, marginBottom:8 }}>Ce qu'ils disent</h2>
+          <h2 style={{ fontFamily:"'Outfit',system-ui", fontSize:'clamp(24px,3vw,32px)', fontWeight:800, marginBottom:8 }}>Ce quils disent</h2>
           <p style={{ fontSize:14, color:T2 }}>Des professionnels de tout le continent</p>
         </div>
         <div style={{ position:'relative' }}>
