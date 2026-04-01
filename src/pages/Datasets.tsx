@@ -1,103 +1,161 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Database, Search, Plus, FileAudio, Clock, Download, Share2, Star, MessageSquare, Check, Filter, Upload, Globe, Lock, Zap, X, ThumbsUp } from 'lucide-react';
+import {
+  Database, Search, Plus, FileAudio, Clock, Download, Share2,
+  Star, MessageSquare, Check, Upload, Globe, Lock, Zap, X,
+  ThumbsUp, Music, ChevronRight, Play, Mic
+} from 'lucide-react';
 
 const DATASETS = [
-  { id:'d1', name:'UrbanSound8K', owner:'Salamon et al.', license:'CC BY 4.0', public:true, size:'5.6 GB', samples:8732, classes:10, sr:'22 kHz', format:'WAV', duration:'8.75h', status:'Ready', created:'Jan 2024', updated:'2h ago', description:'Jeu de données de sons urbains classifiés en 10 catégories. Référence pour la classification audio en milieu urbain.', tags:['Urbain','Environnement','Multi-classe'], color:'#2563eb', colorLight:'rgba(37,99,235,0.1)', rating:4.8, reviews:234, downloads:12400, classNames:['Air Conditioner','Car Horn','Children Playing','Dog Bark','Drilling','Engine Idling','Gun Shot','Jackhammer','Siren','Street Music'], metrics:{ minDur:'0.1s', maxDur:'4.0s', avgDur:'3.8s', snr:'28dB', balance:87 }, reviews_data:[{ author:'Yannick T.', text:'Dataset de référence absolue. Très bien équilibré et propre.', stars:5, date:'Fév 2025' },{ author:'Amara K.', text:'Quelques artefacts dans les fichiers CAR_HORN mais globalement excellent.', stars:4, date:'Jan 2025' }] },
-  { id:'d2', name:'ESC-50', owner:'Piczak', license:'CC BY-NC 3.0', public:true, size:'600 MB', samples:2000, classes:50, sr:'44.1 kHz', format:'WAV', duration:'2.8h', status:'Ready', created:'Nov 2023', updated:'1 day ago', description:'50 classes de sons environnementaux organisées en 5 macrocatégories : animaux, nature, humains, intérieur, extérieur.', tags:['Environnement','Multi-classe','Référence'], color:'#10b981', colorLight:'rgba(16,185,129,0.1)', rating:4.6, reviews:156, downloads:8900, classNames:['Chien','Coq','Pluie','Mer','Feu','Bébé','Voiture','Hélicoptère','Sonnette','Pas','Toux','Rire','Brosse à dent','Horloge','Clavier','Cafetière','Chat','Oiseaux','Grenouilles','Insectes','Moutons','Vache','Ruisseau','Feu de camp','Cricket','Robinet','Scie','Tondeuse','Aspirateur','Montre'], metrics:{ minDur:'5.0s', maxDur:'5.0s', avgDur:'5.0s', snr:'32dB', balance:100 }, reviews_data:[{ author:'Claire M.', text:'Parfait équilibre entre classes. Idéal pour le benchmark.', stars:5, date:'Mars 2025' }] },
-  { id:'d3', name:'FreeSound Custom', owner:'Moi', license:'Privé', public:false, size:'320 MB', samples:1200, classes:12, sr:'44.1 kHz', format:'MP3', duration:'1.2h', status:'Processing', created:'Mars 2025', updated:'Just now', description:"Dataset personnalisé d'enregistrements de terrain. Sons industriels et mécaniques annotés manuellement.", tags:['Industrie','Custom','Privé'], color:'#f59e0b', colorLight:'rgba(245,158,11,0.1)', rating:0, reviews:0, downloads:0, classNames:['Moteur OK','Roulement défaut','Cavitation','Vibration','Pompe OK','Compresseur','Engrenage','Bruit fond','Sifflement','Cliquetis','Grincement','Anomalie'], metrics:{ minDur:'1.0s', maxDur:'10.0s', avgDur:'3.6s', snr:'22dB', balance:72 }, reviews_data:[] },
-  { id:'d4', name:'GTZAN Genre', owner:'Tzanetakis', license:'Academic', public:true, size:'1.2 GB', samples:1000, classes:10, sr:'22.05 kHz', format:'WAV', duration:'8.3h', status:'Ready', created:'Oct 2023', updated:'3 days ago', description:'Collection de 10 genres musicaux, 100 pistes de 30 secondes chacune. Standard en classification musicale.', tags:['Musique','Genre','Référence'], color:'#7c3aed', colorLight:'rgba(124,58,237,0.1)', rating:4.3, reviews:89, downloads:5600, classNames:['Blues','Classical','Country','Disco','HipHop','Jazz','Metal','Pop','Reggae','Rock'], metrics:{ minDur:'30s', maxDur:'30s', avgDur:'30s', snr:'35dB', balance:100 }, reviews_data:[{ author:'Thomas B.', text:'Dataset historique mais toujours valide pour le benchmark.', stars:4, date:'Fév 2025' }] },
+  {
+    id: 'camer', name: 'CamerMusic-500', owner: 'AudioClass Lab', license: 'CC BY 4.0', pub: true,
+    size: '2.1 GB', samples: 500, classes: 5, sr: '44.1 kHz', format: 'WAV', duration: '8.3h',
+    status: 'Ready', created: 'Avril 2025', updated: 'Il y a 2h',
+    desc: 'Dataset de référence pour les styles musicaux camerounais. 100 extraits par genre, 30 secondes, enregistrements studio haute qualité.',
+    tags: ['Musique', 'Cameroun', 'Afrique', 'Studio'], color: '#f59e0b', colorLight: 'rgba(245,158,11,.1)',
+    rating: 4.9, reviews: 42, downloads: 380,
+    classNames: ['Makossa', 'Bikutsi', 'Ambasse Bey', 'Mangambeu', 'Bend Skin'],
+    metrics: { minDur: '30s', maxDur: '30s', avgDur: '30s', snr: '42 dB', balance: 100 },
+    revs: [
+      { a: 'Dr. Eboa Nguema', t: 'Qualité sonore exceptionnelle. Parfait pour un premier modèle.', s: 5, d: 'Avril 2025' },
+      { a: 'Claude Beti', t: 'Les classes Makossa et Bikutsi sont parfaitement équilibrées.', s: 5, d: 'Avril 2025' },
+    ]
+  },
+  {
+    id: 'd1', name: 'UrbanSound8K', owner: 'Salamon et al.', license: 'CC BY 4.0', pub: true,
+    size: '5.6 GB', samples: 8732, classes: 10, sr: '22 kHz', format: 'WAV', duration: '8.75h',
+    status: 'Ready', created: 'Jan 2024', updated: 'Il y a 1 jour',
+    desc: 'Sons urbains classifiés en 10 catégories. Référence internationale pour la classification audio.',
+    tags: ['Urbain', 'Environnement', 'Référence'], color: '#3b6fe8', colorLight: 'rgba(59,111,232,.1)',
+    rating: 4.8, reviews: 234, downloads: 12400,
+    classNames: ['Air Conditioner', 'Car Horn', 'Children Playing', 'Dog Bark', 'Drilling', 'Engine Idling', 'Gun Shot', 'Jackhammer', 'Siren', 'Street Music'],
+    metrics: { minDur: '0.1s', maxDur: '4.0s', avgDur: '3.8s', snr: '28 dB', balance: 87 },
+    revs: [{ a: 'Yannick T.', t: 'Dataset de référence absolue. Très bien équilibré et propre.', s: 5, d: 'Fév 2025' }]
+  },
+  {
+    id: 'd2', name: 'GTZAN Genre', owner: 'Tzanetakis', license: 'Academic', pub: true,
+    size: '1.2 GB', samples: 1000, classes: 10, sr: '22 kHz', format: 'WAV', duration: '8.3h',
+    status: 'Ready', created: 'Oct 2023', updated: 'Il y a 3 jours',
+    desc: '10 genres musicaux, 100 pistes de 30s chacune. Standard en classification musicale mondiale.',
+    tags: ['Musique', 'Genre', 'Référence'], color: '#8b5cf6', colorLight: 'rgba(139,92,246,.1)',
+    rating: 4.3, reviews: 89, downloads: 5600,
+    classNames: ['Blues', 'Classical', 'Country', 'Disco', 'HipHop', 'Jazz', 'Metal', 'Pop', 'Reggae', 'Rock'],
+    metrics: { minDur: '30s', maxDur: '30s', avgDur: '30s', snr: '35 dB', balance: 100 },
+    revs: [{ a: 'Thomas B.', t: 'Dataset historique, toujours valide pour le benchmark.', s: 4, d: 'Fév 2025' }]
+  },
+  {
+    id: 'd3', name: 'Mon Dataset Custom', owner: 'Moi', license: 'Privé', pub: false,
+    size: '0 MB', samples: 0, classes: 0, sr: '—', format: '—', duration: '—',
+    status: 'Empty', created: 'Maintenant', updated: 'Maintenant',
+    desc: 'Importez vos propres fichiers audio pour créer un dataset personnalisé.',
+    tags: ['Custom', 'Privé'], color: '#22c55e', colorLight: 'rgba(34,197,94,.1)',
+    rating: 0, reviews: 0, downloads: 0, classNames: [],
+    metrics: { minDur: '—', maxDur: '—', avgDur: '—', snr: '—', balance: 0 }, revs: []
+  },
 ];
 
-function Stars({ v, onChange }: { v:number; onChange?:(n:number)=>void }) {
+function Stars({ v, onChange }: { v: number; onChange?: (n: number) => void }) {
   const [hov, setHov] = useState(0);
   return (
-    <div style={{ display:'flex', gap:2 }}>
-      {[1,2,3,4,5].map(n => (
+    <span style={{ display: 'flex', gap: 2 }}>
+      {[1, 2, 3, 4, 5].map(n => (
         <button key={n} onMouseEnter={() => setHov(n)} onMouseLeave={() => setHov(0)} onClick={() => onChange?.(n)}
-          style={{ background:'none', border:'none', padding:0, cursor: onChange ? 'pointer' : 'default', display:'flex' }}>
-          <Star size={13} fill={n <= (hov||v) ? '#f59e0b' : 'none'} color={n <= (hov||v) ? '#f59e0b' : 'var(--bdr)'} />
+          style={{ background: 'none', border: 'none', padding: 0, cursor: onChange ? 'pointer' : 'default', display: 'flex' }}>
+          <Star size={13} fill={n <= (hov || v) ? '#f59e0b' : 'none'} color={n <= (hov || v) ? '#f59e0b' : 'var(--bdr)'} />
         </button>
       ))}
-    </div>
-  );
-}
-
-function Badge({ status }: { status: string }) {
-  const map: Record<string, string> = { Ready:'badge-green', Processing:'badge-yellow', Error:'badge-red' };
-  const dot: Record<string, string> = { Ready:'#10b981', Processing:'#f59e0b', Error:'#ef4444' };
-  return (
-    <span className={`ac-badge ${map[status]||'badge-blue'}`}>
-      <span style={{ width:6, height:6, borderRadius:'50%', background:dot[status], display:'inline-block' }} />
-      {status}
     </span>
   );
 }
 
+function StatusDot({ s }: { s: string }) {
+  const c = { Ready: '#22c55e', Processing: '#f59e0b', Error: '#ef4444', Empty: '#8b5cf6' }[s] || '#8b8';
+  const cl = { Ready: 'bd-green', Processing: 'bd-yellow', Error: 'bd-red', Empty: 'bd-purple' }[s] || 'bd-blue';
+  return <span className={`badge ${cl}`}><span style={{ width: 6, height: 6, borderRadius: '50%', background: c, display: 'inline-block' }} />{s}</span>;
+}
+
 export const Datasets: React.FC = () => {
   const [sel, setSel] = useState(DATASETS[0]);
-  const [tab, setTab] = useState<'overview'|'classes'|'reviews'>('overview');
+  const [tab, setTab] = useState<'overview' | 'classes' | 'reviews' | 'import'>('overview');
   const [search, setSearch] = useState('');
   const [rstars, setRstars] = useState(0);
   const [rtxt, setRtxt] = useState('');
   const [rsent, setRsent] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const filtered = DATASETS.filter(d => d.name.toLowerCase().includes(search.toLowerCase()));
-  const submit = () => { if (!rstars || !rtxt.trim()) return; setRsent(true); setTimeout(() => { setRsent(false); setRstars(0); setRtxt(''); }, 2500); };
+  const submit = () => {
+    if (!rstars || !rtxt.trim()) return;
+    setRsent(true); setTimeout(() => { setRsent(false); setRstars(0); setRtxt(''); }, 2500);
+  };
 
   return (
-    <div className="fade-in" style={{ display:'flex', flexDirection:'column', gap:20 }}>
-      {/* Header */}
-      <div style={{ display:'flex', flexWrap:'wrap', alignItems:'flex-end', justifyContent:'space-between', gap:12 }}>
+    <div className="page-wrap fade-in">
+      {/* ── Header ── */}
+      <div className="row-between">
         <div>
-          <div className="page-eyebrow"><Database size={14} color="#2563eb" />Datasets Audio</div>
-          <h1 className="page-title f-display" style={{ marginTop:4 }}>Bibliothèque de <span style={{ color:'#2563eb' }}>Données</span></h1>
-          <p className="page-sub">{DATASETS.length} datasets · {DATASETS.reduce((a,d)=>a+d.samples,0).toLocaleString()} échantillons</p>
+          <div className="eyebrow" style={{ marginBottom: 4 }}><Database size={13} color="var(--accent)" />Datasets Audio</div>
+          <h1 className="h1 font-heading">Bibliothèque de <span style={{ color: 'var(--accent)' }}>Données</span></h1>
+          <p className="sub" style={{ marginTop: 4 }}>{DATASETS.length} datasets · {DATASETS.reduce((a, d) => a + d.samples, 0).toLocaleString()} échantillons</p>
         </div>
-        <div style={{ display:'flex', gap:8 }}>
-          <button className="ac-btn ac-btn-ghost ac-btn-sm" style={{ display:'flex', alignItems:'center', gap:6 }}><Filter size={14} />Filtrer</button>
-          <button className="ac-btn ac-btn-primary ac-btn-sm" style={{ display:'flex', alignItems:'center', gap:6 }}><Plus size={14} />Importer</button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="btn btn-ghost btn-sm" onClick={() => { setSel(DATASETS[3]); setTab('import'); }}>
+            <Upload size={14} />Importer
+          </button>
+          <button className="btn btn-primary btn-sm">
+            <Plus size={14} />Nouveau
+          </button>
         </div>
       </div>
 
-      {/* Main layout */}
-      <div style={{ display:'flex', gap:16, alignItems:'flex-start', flexWrap:'wrap' }}>
+      {/* ── CamerMusic featured banner ── */}
+      <div style={{ padding: '20px 24px', borderRadius: 16, background: 'linear-gradient(135deg, rgba(245,158,11,.15) 0%, rgba(245,158,11,.05) 100%)', border: '1px solid rgba(245,158,11,.3)', display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+        <div style={{ width: 48, height: 48, borderRadius: 14, background: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Music size={24} color="#fff" />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)', fontFamily: "'Outfit',system-ui" }}>CamerMusic-500</span>
+            <span className="badge" style={{ background: 'rgba(245,158,11,.2)', color: '#b45309' }}>★ Recommandé</span>
+            <span className="badge bd-green">Prêt</span>
+          </div>
+          <p style={{ fontSize: 13, color: 'var(--t2)', margin: 0 }}>500 extraits · 5 styles camerounais · 44.1 kHz studio · Parfait pour ce scénario</p>
+        </div>
+        <button className="btn btn-primary btn-sm" onClick={() => { setSel(DATASETS[0]); setTab('overview'); }}>
+          Voir le dataset <ChevronRight size={14} />
+        </button>
+      </div>
+
+      {/* ── Main layout ── */}
+      <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
         {/* List */}
-        <div style={{ width:280, flexShrink:0, display:'flex', flexDirection:'column', gap:10 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:8, padding:'8px 12px', background:'var(--card)', border:'1px solid var(--bdr)', borderRadius:10 }}>
-            <Search size={14} color="var(--tx3)" />
+        <div style={{ width: 272, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'var(--card)', border: '1px solid var(--bdr)', borderRadius: 10 }}>
+            <Search size={14} color="var(--t3)" />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher…"
-              style={{ background:'transparent', border:'none', outline:'none', fontSize:13, color:'var(--tx)', fontFamily:"'Space Grotesk',system-ui,sans-serif", width:'100%' }} />
+              style={{ background: 'transparent', border: 'none', outline: 'none', fontSize: 13, color: 'var(--t1)', fontFamily: 'inherit', width: '100%' }} />
           </div>
           {filtered.map((ds, i) => (
-            <motion.button key={ds.id} initial={{ opacity:0, x:-10 }} animate={{ opacity:1, x:0 }} transition={{ delay:i*.05 }}
-              onClick={() => { setSel(ds); setTab('overview'); }}
-              style={{
-                width:'100%', textAlign:'left', padding:'14px', borderRadius:14,
-                background: sel.id===ds.id ? ds.colorLight : 'var(--card)',
-                border: `1px solid ${sel.id===ds.id ? ds.color : 'var(--bdr)'}`,
-                cursor:'pointer', transition:'all .2s',
-                boxShadow: sel.id===ds.id ? `0 0 0 2px ${ds.color}22, var(--sh)` : 'none',
-              }}>
-              <div style={{ display:'flex', alignItems:'flex-start', gap:10 }}>
-                <div style={{ width:36, height:36, borderRadius:10, background:ds.color, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                  <FileAudio size={16} color="#fff" />
+            <motion.button key={ds.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * .05 }}
+              onClick={() => { setSel(ds); setTab(ds.id === 'd3' ? 'import' : 'overview'); }}
+              style={{ width: '100%', textAlign: 'left', padding: '14px', borderRadius: 14, cursor: 'pointer', transition: 'all .18s', background: sel.id === ds.id ? ds.colorLight : 'var(--card)', border: `1px solid ${sel.id === ds.id ? ds.color : 'var(--bdr)'}`, boxShadow: sel.id === ds.id ? `0 0 0 2px ${ds.color}20, var(--sh-sm)` : 'var(--sh-sm)' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: ds.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <FileAudio size={17} color="#fff" />
                 </div>
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap', justifyContent:'space-between' }}>
-                    <span style={{ fontSize:13, fontWeight:700, color:'var(--tx)', fontFamily:"'Syne',system-ui,sans-serif" }}>{ds.name}</span>
-                    <Badge status={ds.status} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, flexWrap: 'wrap', marginBottom: 3 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', fontFamily: "'Outfit',system-ui" }}>{ds.name}</span>
+                    <StatusDot s={ds.status} />
                   </div>
-                  <div style={{ display:'flex', gap:6, marginTop:4, flexWrap:'wrap' }}>
-                    <span style={{ fontSize:11, color:'var(--tx3)', fontFamily:"'JetBrains Mono',monospace" }}>{ds.samples.toLocaleString()} samples</span>
-                    <span style={{ fontSize:11, color:'var(--bdr)' }}>·</span>
-                    <span style={{ fontSize:11, color:'var(--tx3)', fontFamily:"'JetBrains Mono',monospace" }}>{ds.classes} classes</span>
-                    {!ds.public && <Lock size={10} color="var(--tx3)" />}
-                  </div>
+                  <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {ds.samples > 0 ? `${ds.samples.toLocaleString()} samples · ${ds.classes} classes` : 'Vide — importer des fichiers'}
+                  </p>
                   {ds.rating > 0 && (
-                    <div style={{ display:'flex', alignItems:'center', gap:4, marginTop:4 }}>
-                      <Star size={10} fill="#f59e0b" color="#f59e0b" />
-                      <span style={{ fontSize:11, color:'var(--tx3)' }}>{ds.rating} ({ds.reviews})</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 5 }}>
+                      <Stars v={ds.rating} />
+                      <span style={{ fontSize: 10, color: 'var(--t3)' }}>{ds.rating} ({ds.reviews})</span>
                     </div>
                   )}
                 </div>
@@ -108,168 +166,204 @@ export const Datasets: React.FC = () => {
 
         {/* Detail panel */}
         <AnimatePresence mode="wait">
-          <motion.div key={sel.id} initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}
-            className="ac-card" style={{ flex:1, minWidth:0, overflow:'hidden', minHeight:500 }}>
+          <motion.div key={sel.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className="card" style={{ flex: 1, minWidth: 0, minHeight: 520 }}>
+
             {/* Hero */}
-            <div style={{ background:sel.colorLight, padding:'20px 24px', position:'relative', overflow:'hidden' }}>
-              <div style={{ position:'absolute', inset:0, background:`radial-gradient(ellipse at 80% 0%, ${sel.color}30, transparent 65%)`, pointerEvents:'none' }} />
-              <div style={{ display:'flex', flexWrap:'wrap', gap:16, justifyContent:'space-between', position:'relative' }}>
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:8 }}>
-                    <div style={{ width:32, height:32, borderRadius:9, background:sel.color, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                      <FileAudio size={15} color="#fff" />
-                    </div>
-                    <span style={{ fontSize:11, color:'var(--tx3)', fontFamily:"'JetBrains Mono',monospace", textTransform:'uppercase', letterSpacing:'.08em' }}>{sel.owner}</span>
-                    <Badge status={sel.status} />
-                    {sel.public ? <span className="ac-badge badge-blue"><Globe size={9} />Public</span> : <span className="ac-badge badge-yellow"><Lock size={9} />Privé</span>}
+            <div style={{ padding: '22px 26px', background: sel.colorLight, borderBottom: '1px solid var(--bdr)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 85% 0%, ${sel.color}28, transparent 60%)`, pointerEvents: 'none' }} />
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', position: 'relative' }}>
+                <div style={{ flex: 1, minWidth: 220 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 9, background: sel.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FileAudio size={15} color="#fff" /></div>
+                    <span style={{ fontSize: 11, color: 'var(--t3)', fontFamily: "'JetBrains Mono',monospace" }}>{sel.owner}</span>
+                    <StatusDot s={sel.status} />
+                    {sel.pub ? <span className="badge bd-blue"><Globe size={9} />Public</span> : <span className="badge bd-yellow"><Lock size={9} />Privé</span>}
                   </div>
-                  <h2 className="f-display" style={{ fontSize:24, fontWeight:700, color:'var(--tx)', margin:'0 0 4px' }}>{sel.name}</h2>
-                  <p style={{ fontSize:13, color:'var(--tx2)', margin:'0 0 10px', lineHeight:1.5, maxWidth:480 }}>{sel.description}</p>
-                  <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
-                    {sel.tags.map(t => (
-                      <span key={t} style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:99, border:`1px solid ${sel.color}45`, color:sel.color, background:sel.color+'15' }}>{t}</span>
+                  <h2 className="h2 font-heading" style={{ marginBottom: 6 }}>{sel.name}</h2>
+                  <p style={{ fontSize: 13, color: 'var(--t2)', lineHeight: 1.6, maxWidth: 460, margin: 0 }}>{sel.desc}</p>
+                  <div style={{ display: 'flex', gap: 5, marginTop: 10, flexWrap: 'wrap' }}>
+                    {sel.tags.map(t => <span key={t} style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 99, border: `1px solid ${sel.color}40`, color: sel.color, background: sel.color + '14' }}>{t}</span>)}
+                  </div>
+                </div>
+                {sel.samples > 0 && (
+                  <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flexShrink: 0 }}>
+                    {[{ v: sel.samples.toLocaleString(), l: 'Samples' }, { v: sel.classes, l: 'Classes' }, { v: sel.size, l: 'Taille' }].map(s => (
+                      <div key={s.l} style={{ textAlign: 'right' }}>
+                        <div className="font-heading" style={{ fontSize: 24, fontWeight: 700, color: sel.color, lineHeight: 1.1 }}>{s.v}</div>
+                        <div style={{ fontSize: 10, color: 'var(--t3)', fontFamily: "'JetBrains Mono',monospace", textTransform: 'uppercase', letterSpacing: '.08em', marginTop: 2 }}>{s.l}</div>
+                      </div>
                     ))}
                   </div>
-                </div>
-                <div style={{ display:'flex', gap:16 }}>
-                  {[{v:sel.samples.toLocaleString(),l:'Samples'},{v:sel.classes,l:'Classes'},{v:sel.size,l:'Taille'}].map(s => (
-                    <div key={s.l} style={{ textAlign:'right' }}>
-                      <div className="f-display" style={{ fontSize:22, fontWeight:700, color:sel.color }}>{s.v}</div>
-                      <div style={{ fontSize:10, color:'var(--tx3)', fontFamily:"'JetBrains Mono',monospace", textTransform:'uppercase', letterSpacing:'.08em' }}>{s.l}</div>
-                    </div>
-                  ))}
-                </div>
+                )}
               </div>
               {/* Mini waveform */}
-              <div style={{ display:'flex', alignItems:'flex-end', gap:2, height:32, marginTop:14, opacity:.5 }}>
-                {[...Array(48)].map((_,i) => (
-                  <motion.div key={i} animate={{ scaleY:[.1,.3+Math.random()*.9,.1] }} transition={{ duration:.7+i*.04, repeat:Infinity, ease:'easeInOut' }}
-                    style={{ flex:1, borderRadius:2, background:sel.color, height:'100%', transformOrigin:'bottom' }} />
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 28, marginTop: 16, opacity: .4 }}>
+                {[...Array(50)].map((_, i) => (
+                  <motion.div key={i} animate={{ scaleY: [.1, .25 + Math.sin(i * .45) * .75, .1] }}
+                    transition={{ duration: .8 + i * .03, repeat: Infinity, ease: 'easeInOut' }}
+                    style={{ flex: 1, borderRadius: 2, background: sel.color, height: '100%', transformOrigin: 'bottom' }} />
                 ))}
               </div>
             </div>
 
             {/* Tabs */}
-            <div className="ac-tabs">
-              {(['overview','classes','reviews'] as const).map(t => (
-                <button key={t} className={`ac-tab${tab===t?' active':''}`} onClick={() => setTab(t)}>
-                  {t==='overview' ? 'Aperçu' : t==='classes' ? `Classes (${sel.classes})` : `Avis (${sel.reviews})`}
+            <div className="tabs">
+              {(['overview', 'classes', 'reviews', 'import'] as const).map(t => (
+                <button key={t} className={`tab${tab === t ? ' on' : ''}`} onClick={() => setTab(t)}>
+                  {t === 'overview' ? 'Aperçu' : t === 'classes' ? `Classes (${sel.classNames.length})` : t === 'reviews' ? `Avis (${sel.reviews})` : 'Importer'}
                 </button>
               ))}
             </div>
 
-            <div style={{ padding:'20px 24px', overflowY:'auto', maxHeight:420 }}>
+            <div style={{ padding: '22px 26px', overflowY: 'auto', maxHeight: 480 }}>
               <AnimatePresence mode="wait">
-                <motion.div key={tab} initial={{ opacity:0, y:6 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}>
-                  {tab==='overview' && (
-                    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
-                      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(120px,1fr))', gap:10 }}>
-                        {[['Samples',sel.samples.toLocaleString()],['Classes',sel.classes],['Durée totale',sel.duration],['Taille',sel.size],['Sample Rate',sel.sr],['Format',sel.format],['Durée min',sel.metrics.minDur],['Durée max',sel.metrics.maxDur],['Durée moy.',sel.metrics.avgDur],['SNR moyen',sel.metrics.snr],['Téléchargements',sel.downloads.toLocaleString()],['Licence',sel.license]].map(([l,v]) => (
-                          <div key={l} className="metric-box">
-                            <div className="metric-val">{v}</div>
-                            <div className="metric-lbl">{l}</div>
-                          </div>
+                <motion.div key={tab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+
+                  {tab === 'overview' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px,1fr))', gap: 10 }}>
+                        {[['Samples', sel.samples > 0 ? sel.samples.toLocaleString() : '—'], ['Classes', sel.classes || '—'], ['Durée totale', sel.duration], ['Taille', sel.size], ['Sample Rate', sel.sr], ['Format', sel.format], ['Durée min', sel.metrics.minDur], ['SNR moyen', sel.metrics.snr], ['Licence', sel.license], ['Mis à jour', sel.updated], ['Créé', sel.created], ['Téléchargements', sel.downloads.toLocaleString()]].map(([l, v]) => (
+                          <div key={l} className="metric"><div className="metric-val">{v}</div><div className="metric-lbl">{l}</div></div>
                         ))}
                       </div>
-                      <div style={{ background:'var(--bg1)', border:'1px solid var(--bdr2)', borderRadius:12, padding:'14px' }}>
-                        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8 }}>
-                          <span style={{ fontSize:13, fontWeight:600, color:'var(--tx)' }}>Équilibre des classes</span>
-                          <span style={{ fontSize:13, fontWeight:700, fontFamily:"'JetBrains Mono',monospace", color: sel.metrics.balance>=90?'#10b981':sel.metrics.balance>=70?'#f59e0b':'#ef4444' }}>{sel.metrics.balance}%</span>
-                        </div>
-                        <div style={{ height:8, borderRadius:99, background:'var(--bg2)', overflow:'hidden' }}>
-                          <motion.div initial={{ width:0 }} animate={{ width:sel.metrics.balance+'%' }} transition={{ duration:1, ease:'easeOut' }}
-                            style={{ height:'100%', borderRadius:99, background: sel.metrics.balance>=90?'#10b981':sel.metrics.balance>=70?'#f59e0b':'#ef4444' }} />
-                        </div>
-                        <p style={{ fontSize:11, color:'var(--tx3)', marginTop:6 }}>
-                          {sel.metrics.balance>=90?'✓ Très bien équilibré':sel.metrics.balance>=70?'⚠ Léger déséquilibre — data augmentation conseillée':'✗ Déséquilibre significatif — data augmentation requise'}
-                        </p>
-                      </div>
-                      <div style={{ display:'flex', alignItems:'center', gap:10, fontSize:13, color:'var(--tx3)' }}>
-                        <Clock size={13} /> Créé le <strong style={{ color:'var(--tx)' }}>{sel.created}</strong> · Mis à jour <strong style={{ color:'var(--tx)' }}>{sel.updated}</strong>
-                      </div>
-                      <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                        <button className="ac-btn ac-btn-primary ac-btn-sm" style={{ display:'flex', alignItems:'center', gap:6 }}><Download size={13} />Télécharger</button>
-                        <button className="ac-btn ac-btn-ghost ac-btn-sm" style={{ display:'flex', alignItems:'center', gap:6 }}><Share2 size={13} />Partager</button>
-                        <button className="ac-btn ac-btn-ghost ac-btn-sm" style={{ display:'flex', alignItems:'center', gap:6 }}><Zap size={13} />Utiliser pour l'entraînement</button>
-                      </div>
-                    </div>
-                  )}
-
-                  {tab==='classes' && (
-                    <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-                      <p style={{ fontSize:13, color:'var(--tx3)' }}>{sel.classes} classes de sortie disponibles.</p>
-                      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))', gap:8 }}>
-                        {sel.classNames.map((cls, i) => {
-                          const pct = Math.round(70+Math.random()*30);
-                          return (
-                            <motion.div key={cls} initial={{ opacity:0, scale:.92 }} animate={{ opacity:1, scale:1 }} transition={{ delay:i*.02 }}
-                              style={{ background:'var(--bg1)', border:'1px solid var(--bdr2)', borderRadius:12, padding:'10px 12px' }}>
-                              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
-                                <div style={{ width:22, height:22, borderRadius:7, background:sel.color, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:9, fontWeight:700, flexShrink:0 }}>{i+1}</div>
-                                <span style={{ fontSize:12, fontWeight:600, color:'var(--tx)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cls}</span>
-                              </div>
-                              <div style={{ height:4, borderRadius:99, background:'var(--bg2)' }}>
-                                <div style={{ height:'100%', borderRadius:99, background:sel.color, width:pct+'%' }} />
-                              </div>
-                              <div style={{ fontSize:10, color:'var(--tx3)', marginTop:4, fontFamily:"'JetBrains Mono',monospace" }}>{pct}% · {Math.floor(sel.samples/sel.classes*pct/100)} samples</div>
-                            </motion.div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {tab==='reviews' && (
-                    <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-                      {sel.rating > 0 && (
-                        <div style={{ display:'flex', alignItems:'center', gap:20, background:'var(--bg1)', border:'1px solid var(--bdr2)', borderRadius:12, padding:'14px 16px' }}>
-                          <div style={{ textAlign:'center' }}>
-                            <div className="f-display" style={{ fontSize:40, fontWeight:700, color:'var(--tx)', lineHeight:1 }}>{sel.rating}</div>
-                            <Stars v={sel.rating} />
-                            <div style={{ fontSize:11, color:'var(--tx3)', marginTop:4 }}>{sel.reviews} avis</div>
+                      {sel.metrics.balance > 0 && (
+                        <div style={{ background: 'var(--s1)', border: '1px solid var(--bdr2)', borderRadius: 12, padding: 16 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                            <span className="h3">Équilibre des classes</span>
+                            <span style={{ fontSize: 14, fontWeight: 700, fontFamily: "'JetBrains Mono',monospace", color: sel.metrics.balance >= 90 ? 'var(--ok)' : sel.metrics.balance >= 70 ? 'var(--warn)' : 'var(--danger)' }}>{sel.metrics.balance}%</span>
                           </div>
-                          <div style={{ flex:1, display:'flex', flexDirection:'column', gap:6 }}>
-                            {[5,4,3,2,1].map(n => (
-                              <div key={n} style={{ display:'flex', alignItems:'center', gap:8 }}>
-                                <span style={{ fontSize:11, color:'var(--tx3)', width:10, textAlign:'right' }}>{n}</span>
+                          <div style={{ height: 8, borderRadius: 99, background: 'var(--bdr2)', overflow: 'hidden' }}>
+                            <motion.div initial={{ width: 0 }} animate={{ width: sel.metrics.balance + '%' }} transition={{ duration: 1 }}
+                              style={{ height: '100%', borderRadius: 99, background: sel.metrics.balance >= 90 ? 'var(--ok)' : sel.metrics.balance >= 70 ? 'var(--warn)' : 'var(--danger)' }} />
+                          </div>
+                          <p style={{ fontSize: 12, color: 'var(--t3)', marginTop: 6 }}>{sel.metrics.balance === 100 ? '✓ Parfaitement équilibré — idéal pour l\'entraînement' : sel.metrics.balance >= 90 ? '✓ Très bien équilibré' : '⚠ Déséquilibre — data augmentation conseillée'}</p>
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <button className="btn btn-primary btn-sm"><Download size={13} />Télécharger</button>
+                        <button className="btn btn-ghost btn-sm"><Share2 size={13} />Partager</button>
+                        <button className="btn btn-ghost btn-sm"><Zap size={13} />Utiliser pour l'entraînement</button>
+                      </div>
+                    </div>
+                  )}
+
+                  {tab === 'classes' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                      {sel.classNames.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--t3)' }}>
+                          <FileAudio size={32} style={{ margin: '0 auto 12px', opacity: .3 }} />
+                          <p>Aucune classe — importez d'abord vos données</p>
+                        </div>
+                      ) : (
+                        <>
+                          <p className="sub">{sel.classNames.length} classes disponibles dans ce dataset.</p>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px,1fr))', gap: 8 }}>
+                            {sel.classNames.map((cls, i) => {
+                              const pct = sel.metrics.balance === 100 ? Math.floor(sel.samples / sel.classNames.length) : Math.floor(sel.samples / sel.classNames.length * (0.8 + Math.random() * 0.4));
+                              return (
+                                <motion.div key={cls} initial={{ opacity: 0, scale: .9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * .04 }}
+                                  style={{ background: 'var(--s1)', border: '1px solid var(--bdr2)', borderRadius: 12, padding: '12px 14px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                                    <div style={{ width: 24, height: 24, borderRadius: 7, background: sel.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
+                                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)' }}>{cls}</span>
+                                  </div>
+                                  <div style={{ height: 4, borderRadius: 99, background: 'var(--bdr2)' }}>
+                                    <div style={{ height: '100%', borderRadius: 99, background: sel.color, width: (100 / sel.classNames.length) + '%' }} />
+                                  </div>
+                                  <div style={{ fontSize: 10, color: 'var(--t3)', marginTop: 5, fontFamily: "'JetBrains Mono',monospace" }}>{pct} samples</div>
+                                </motion.div>
+                              );
+                            })}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {tab === 'reviews' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      {sel.rating > 0 && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 24, background: 'var(--s1)', border: '1px solid var(--bdr2)', borderRadius: 12, padding: 16, flexWrap: 'wrap' }}>
+                          <div style={{ textAlign: 'center' }}>
+                            <div className="font-heading" style={{ fontSize: 42, fontWeight: 800, color: 'var(--t1)', lineHeight: 1 }}>{sel.rating}</div>
+                            <Stars v={sel.rating} />
+                            <div style={{ fontSize: 11, color: 'var(--t3)', marginTop: 4 }}>{sel.reviews} avis</div>
+                          </div>
+                          <div style={{ flex: 1, minWidth: 120 }}>
+                            {[5, 4, 3, 2, 1].map(n => (
+                              <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 4 }}>
+                                <span style={{ fontSize: 11, color: 'var(--t3)', width: 10 }}>{n}</span>
                                 <Star size={9} fill="#f59e0b" color="#f59e0b" />
-                                <div style={{ flex:1, height:6, borderRadius:99, background:'var(--bg2)', overflow:'hidden' }}>
-                                  <div style={{ height:'100%', background:'#f59e0b', borderRadius:99, width: n===5?'62%':n===4?'24%':n===3?'9%':'5%' }} />
+                                <div style={{ flex: 1, height: 5, borderRadius: 99, background: 'var(--bdr2)', overflow: 'hidden' }}>
+                                  <div style={{ height: '100%', background: '#f59e0b', borderRadius: 99, width: n === 5 ? '80%' : n === 4 ? '15%' : '5%' }} />
                                 </div>
                               </div>
                             ))}
                           </div>
                         </div>
                       )}
-                      {sel.reviews_data.map((r, i) => (
-                        <div key={i} style={{ background:'var(--bg1)', border:'1px solid var(--bdr2)', borderRadius:12, padding:'14px 16px' }}>
-                          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
-                            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                              <div style={{ width:28, height:28, borderRadius:8, background:'linear-gradient(135deg,#2563eb,#7c3aed)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:11, fontWeight:700 }}>{r.author[0]}</div>
-                              <span style={{ fontSize:13, fontWeight:600, color:'var(--tx)' }}>{r.author}</span>
+                      {sel.revs.map((r, i) => (
+                        <div key={i} style={{ background: 'var(--s1)', border: '1px solid var(--bdr2)', borderRadius: 12, padding: '14px 16px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg,var(--accent),#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 11, fontWeight: 700 }}>{r.a[0]}</div>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)' }}>{r.a}</span>
                             </div>
-                            <Stars v={r.stars} />
+                            <Stars v={r.s} />
                           </div>
-                          <p style={{ fontSize:13, color:'var(--tx3)', lineHeight:1.5, margin:0 }}>{r.text}</p>
-                          <div style={{ display:'flex', justifyContent:'space-between', marginTop:8 }}>
-                            <span style={{ fontSize:11, color:'var(--tx3)', fontFamily:"'JetBrains Mono',monospace" }}>{r.date}</span>
-                            <button style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'var(--tx3)', background:'none', border:'none', cursor:'pointer' }}>
-                              <ThumbsUp size={11} /> Utile
-                            </button>
+                          <p style={{ fontSize: 13, color: 'var(--t2)', lineHeight: 1.55, margin: '0 0 8px' }}>{r.t}</p>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: 10, color: 'var(--t4)', fontFamily: "'JetBrains Mono',monospace" }}>{r.d}</span>
+                            <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--t3)', background: 'none', border: 'none', cursor: 'pointer' }}><ThumbsUp size={11} />Utile</button>
                           </div>
                         </div>
                       ))}
-                      {sel.reviews_data.length===0 && <p style={{ fontSize:13, color:'var(--tx3)', textAlign:'center', padding:'20px 0' }}>Aucun avis. Soyez le premier !</p>}
-                      <div style={{ background:'var(--bg1)', border:'1px solid var(--bdr2)', borderRadius:12, padding:'16px' }}>
-                        <div style={{ fontSize:13, fontWeight:700, color:'var(--tx)', marginBottom:10 }}>Laisser un avis</div>
+                      {sel.revs.length === 0 && <p style={{ fontSize: 13, color: 'var(--t3)', textAlign: 'center', padding: '20px 0' }}>Aucun avis pour ce dataset.</p>}
+                      <div style={{ background: 'var(--s1)', border: '1px solid var(--bdr2)', borderRadius: 12, padding: 16 }}>
+                        <div className="h3" style={{ marginBottom: 12 }}>Laisser un avis</div>
                         <Stars v={rstars} onChange={setRstars} />
-                        <textarea className="ac-input" value={rtxt} onChange={e => setRtxt(e.target.value)} placeholder="Votre expérience…"
-                          style={{ marginTop:10, minHeight:72, resize:'vertical' }} />
-                        <div style={{ display:'flex', justifyContent:'flex-end', marginTop:10 }}>
-                          <button onClick={submit} className="ac-btn ac-btn-primary ac-btn-sm" style={{ display:'flex', alignItems:'center', gap:6 }}>
-                            {rsent ? <><Check size={12} />Publié !</> : <><MessageSquare size={12} />Publier</>}
-                          </button>
+                        <textarea className="input" value={rtxt} onChange={e => setRtxt(e.target.value)} placeholder="Votre expérience avec ce dataset…" style={{ marginTop: 10 }} />
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
+                          <button onClick={submit} className="btn btn-primary btn-sm">{rsent ? <><Check size={12} />Publié !</> : <><MessageSquare size={12} />Publier</>}</button>
                         </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {tab === 'import' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                      <div>
+                        <div className="h3" style={{ marginBottom: 4 }}>Importer des fichiers audio</div>
+                        <p className="sub">WAV, MP3, FLAC, OGG acceptés. Max 10 GB par upload.</p>
+                      </div>
+                      <div
+                        onDragEnter={() => setDragging(true)} onDragLeave={() => setDragging(false)}
+                        onDragOver={e => e.preventDefault()} onDrop={() => setDragging(false)}
+                        onClick={() => fileRef.current?.click()}
+                        style={{ border: `2px dashed ${dragging ? 'var(--accent)' : 'var(--bdr)'}`, borderRadius: 14, padding: '40px 24px', textAlign: 'center', cursor: 'pointer', transition: 'all .2s', background: dragging ? 'rgba(59,111,232,.04)' : 'transparent' }}>
+                        <input ref={fileRef} type="file" accept="audio/*" multiple style={{ display: 'none' }} />
+                        <Upload size={32} color="var(--t3)" style={{ margin: '0 auto 12px' }} />
+                        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--t1)', margin: '0 0 4px' }}>Glissez vos fichiers ici</p>
+                        <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>ou cliquez pour parcourir</p>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                        {[['Nom du dataset', 'CamerMusic-Custom'], ['Licence', 'CC BY 4.0'], ['Visibilité', 'Public'], ['Description', '']].map(([l, ph]) => (
+                          <div key={l} style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--t2)' }}>{l}</label>
+                            {l === 'Visibilité' ? (
+                              <select className="input"><option>Public</option><option>Privé</option></select>
+                            ) : l === 'Description' ? (
+                              <textarea className="input" placeholder="Description optionnelle…" style={{ minHeight: 60, gridColumn: 'span 2' }} />
+                            ) : (
+                              <input className="input" defaultValue={ph} />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button className="btn btn-primary btn-sm"><Upload size={13} />Importer le dataset</button>
+                        <button className="btn btn-ghost btn-sm"><Mic size={13} />Enregistrer en direct</button>
                       </div>
                     </div>
                   )}

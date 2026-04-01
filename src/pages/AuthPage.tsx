@@ -1,139 +1,128 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AudioWaveform as Waveform, Github, Mail, Lock, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Zap, Mail, Lock, ArrowRight, Eye, EyeOff, Music } from 'lucide-react';
 
 export const AuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [showPwd, setShowPwd] = useState(false);
+  const [email, setEmail] = useState('');
+  const [pwd, setPwd] = useState('');
   const navigate = useNavigate();
 
-  const handleAuth = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     navigate('/dashboard');
   };
 
+  const BG = '#060f1f';
+
   return (
-    <div className="min-h-screen bg-navy flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Decorative Background Elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.2, 1],
-            rotate: [0, 10, 0],
-            opacity: [0.3, 0.5, 0.3]
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-1/4 -right-1/4 w-[800px] h-[800px] bg-electric/20 rounded-full blur-[120px]"
-        />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.3, 1],
-            rotate: [0, -15, 0],
-            opacity: [0.2, 0.4, 0.2]
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -bottom-1/4 -left-1/4 w-[600px] h-[600px] bg-blue-900/40 rounded-full blur-[100px]"
-        />
-      </div>
-
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-[420px] bg-cream rounded-[2rem] shadow-2xl overflow-hidden border border-white/20 relative z-10"
-      >
-        <div className="p-10 text-center bg-navy/5 border-b border-navy/5">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-electric rounded-3xl text-white mb-6 shadow-xl shadow-electric/30 rotate-3 hover:rotate-0 transition-transform duration-500">
-            <Waveform size={40} />
-          </div>
-          <h1 className="text-3xl font-bold text-navy tracking-tight">AudioClass AI</h1>
-          <p className="text-slate-500 font-medium mt-2">Studio de classification audio</p>
-        </div>
-
-        <div className="p-10">
-          <div className="flex bg-navy/5 p-1.5 rounded-2xl mb-10">
-            <button 
-              onClick={() => setIsLogin(true)}
-              className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-300 ${isLogin ? 'bg-white text-navy shadow-lg' : 'text-slate-500 hover:text-navy'}`}
-            >
-              CONNEXION
-            </button>
-            <button 
-              onClick={() => setIsLogin(false)}
-              className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-300 ${!isLogin ? 'bg-white text-navy shadow-lg' : 'text-slate-500 hover:text-navy'}`}
-            >
-              INSCRIPTION
-            </button>
-          </div>
-
-          <form onSubmit={handleAuth} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Email Address</label>
-              <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-electric transition-colors" size={20} />
-                <input 
-                  type="email" 
-                  placeholder="nom@exemple.com"
-                  className="w-full bg-white border border-navy/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-4 focus:ring-electric/10 focus:border-electric transition-all text-navy font-medium placeholder:text-slate-300"
-                  required
-                />
-              </div>
+    <div style={{ minHeight: '100vh', background: BG, display: 'flex', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
+      {/* Left — Branding */}
+      <div style={{ flex: 1, display: 'none', flexDirection: 'column', justifyContent: 'space-between', padding: '48px 56px', position: 'relative', overflow: 'hidden' }} className="hidden lg:flex">
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(59,111,232,.25) 0%, rgba(139,92,246,.15) 100%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: -100, left: -100, width: 400, height: 400, borderRadius: '50%', background: 'rgba(59,111,232,.15)', filter: 'blur(80px)' }} />
+        <div style={{ position: 'relative' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 64 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: '#3b6fe8', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 3px 12px rgba(59,111,232,.5)' }}>
+              <Zap size={18} color="#fff" />
             </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Password</label>
-                {isLogin && <button type="button" className="text-[10px] font-bold text-electric hover:underline uppercase tracking-wider">Oublié ?</button>}
-              </div>
-              <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-electric transition-colors" size={20} />
-                <input 
-                  type="password" 
-                  placeholder="••••••••"
-                  className="w-full bg-white border border-navy/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-4 focus:ring-electric/10 focus:border-electric transition-all text-navy font-medium placeholder:text-slate-300"
-                  required
-                />
-              </div>
-            </div>
-
-            <button type="submit" className="w-full bg-electric text-white py-5 rounded-2xl font-black text-sm tracking-[0.1em] flex items-center justify-center gap-3 hover:bg-blue-600 shadow-xl shadow-electric/30 transition-all active:scale-[0.98] group">
-              {isLogin ? 'ENTRER DANS LE STUDIO' : 'CRÉER MON COMPTE'}
-              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-          </form>
-
-          <div className="relative my-10">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-navy/5"></div>
-            </div>
-            <div className="relative flex justify-center text-[10px] uppercase tracking-[0.2em] font-bold">
-              <span className="bg-cream px-4 text-slate-400">Ou continuer avec</span>
-            </div>
+            <span style={{ fontFamily: "'Outfit',system-ui", fontWeight: 700, fontSize: 18, color: '#fff' }}>AudioClass AI</span>
           </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <button className="flex items-center justify-center gap-3 py-4 bg-white border border-navy/5 rounded-2xl hover:bg-slate-50 transition-all font-bold text-sm text-navy shadow-sm">
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
-              GOOGLE
-            </button>
-            <button className="flex items-center justify-center gap-3 py-4 bg-white border border-navy/5 rounded-2xl hover:bg-slate-50 transition-all font-bold text-sm text-navy shadow-sm">
-              <Github size={20} />
-              GITHUB
-            </button>
-          </div>
-
-          <p className="text-center text-xs font-bold text-slate-400 mt-10">
-            {isLogin ? "PAS ENCORE DE COMPTE ? " : "DÉJÀ UN COMPTE ? "}
-            <button onClick={() => setIsLogin(!isLogin)} className="text-electric hover:underline uppercase tracking-wider">
-              {isLogin ? "S'inscrire" : "Se connecter"}
-            </button>
+          <h1 style={{ fontFamily: "'Outfit',system-ui", fontSize: 38, fontWeight: 800, color: '#fff', lineHeight: 1.1, marginBottom: 20 }}>
+            De l'audio brut<br />à l'intelligence<br /><span style={{ color: '#93b4ff' }}>en quelques clics.</span>
+          </h1>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,.5)', lineHeight: 1.7, maxWidth: 360 }}>
+            Plateforme ML audio pour la reconnaissance des styles musicaux camerounais et bien plus encore.
           </p>
         </div>
-      </motion.div>
+        {/* Scenario steps */}
+        <div style={{ position: 'relative' }}>
+          <p style={{ fontSize: 11, fontFamily: "'JetBrains Mono',monospace", color: 'rgba(255,255,255,.3)', textTransform: 'uppercase', letterSpacing: '.12em', marginBottom: 16 }}>Scénario · CamerMusic-ID</p>
+          {[
+            { n: '01', t: 'Importer CamerMusic-500', d: '5 styles camerounais, 500 extraits studio' },
+            { n: '02', t: 'Entraîner le modèle', d: 'CNN-ResNet18 + Mel Spectrogram, 50 epochs' },
+            { n: '03', t: 'Prédire un extrait', d: 'Makossa · 87% confiance · 18ms latence' },
+          ].map((s, i) => (
+            <div key={i} style={{ display: 'flex', gap: 14, marginBottom: 14, opacity: 1 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(59,111,232,.25)', border: '1px solid rgba(59,111,232,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#93b4ff', fontFamily: "'JetBrains Mono',monospace" }}>{s.n}</span>
+              </div>
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#dde8ff', margin: '2px 0 2px' }}>{s.t}</p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,.35)', margin: 0 }}>{s.d}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right — Form */}
+      <div style={{ width: '100%', maxWidth: 440, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ width: '100%' }}>
+          {/* Mobile logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 36 }} className="lg:hidden">
+            <div style={{ width: 32, height: 32, borderRadius: 9, background: '#3b6fe8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Zap size={16} color="#fff" />
+            </div>
+            <span style={{ fontFamily: "'Outfit',system-ui", fontWeight: 700, fontSize: 16, color: '#fff' }}>AudioClass AI</span>
+          </div>
+
+          <div style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 20, padding: '36px 32px' }}>
+            <h2 style={{ fontFamily: "'Outfit',system-ui", fontSize: 24, fontWeight: 700, color: '#fff', margin: '0 0 6px' }}>
+              {isLogin ? 'Connexion' : 'Créer un compte'}
+            </h2>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,.4)', margin: '0 0 28px' }}>
+              {isLogin ? 'Accédez à votre espace AudioClass AI' : 'Rejoignez la plateforme ML audio africaine'}
+            </p>
+
+            {/* Demo quick login */}
+            <button onClick={handleSubmit} style={{ width: '100%', padding: '11px', borderRadius: 11, background: 'rgba(245,158,11,.15)', border: '1px solid rgba(245,158,11,.3)', color: '#fbbf24', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 20, transition: 'all .15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(245,158,11,.25)')} onMouseLeave={e => (e.currentTarget.style.background = 'rgba(245,158,11,.15)')}>
+              <Music size={15} />Démo · Scénario CamerMusic (accès direct)
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.08)' }} />
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,.25)', fontFamily: "'JetBrains Mono',monospace" }}>ou avec un compte</span>
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.08)' }} />
+            </div>
+
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,.5)', display: 'block', marginBottom: 6 }}>Email</label>
+                <div style={{ position: 'relative' }}>
+                  <Mail size={15} color="rgba(255,255,255,.3)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="votre@email.com"
+                    style={{ width: '100%', padding: '10px 12px 10px 36px', borderRadius: 10, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.12)', color: '#fff', fontSize: 14, fontFamily: 'inherit', outline: 'none' }} />
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,.5)', display: 'block', marginBottom: 6 }}>Mot de passe</label>
+                <div style={{ position: 'relative' }}>
+                  <Lock size={15} color="rgba(255,255,255,.3)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                  <input type={showPwd ? 'text' : 'password'} value={pwd} onChange={e => setPwd(e.target.value)} placeholder="••••••••"
+                    style={{ width: '100%', padding: '10px 40px 10px 36px', borderRadius: 10, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.12)', color: '#fff', fontSize: 14, fontFamily: 'inherit', outline: 'none' }} />
+                  <button type="button" onClick={() => setShowPwd(!showPwd)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255,255,255,.3)', cursor: 'pointer', display: 'flex' }}>
+                    {showPwd ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+              </div>
+              <button type="submit" style={{ width: '100%', padding: '11px', borderRadius: 11, background: '#3b6fe8', border: 'none', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: '0 4px 16px rgba(59,111,232,.4)', marginTop: 4, transition: 'all .15s' }}>
+                {isLogin ? 'Se connecter' : 'Créer mon compte'} <ArrowRight size={16} />
+              </button>
+            </form>
+
+            <p style={{ textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,.35)', marginTop: 20 }}>
+              {isLogin ? 'Pas encore de compte ?' : 'Déjà un compte ?'}{' '}
+              <button onClick={() => setIsLogin(!isLogin)} style={{ background: 'none', border: 'none', color: '#93b4ff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                {isLogin ? 'S\'inscrire' : 'Se connecter'}
+              </button>
+            </p>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 };

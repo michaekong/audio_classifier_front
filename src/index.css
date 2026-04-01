@@ -251,3 +251,17 @@ select.input { cursor: pointer; }
   .lg\:block { display: block; }
   .lg\:hidden { display: none !important; }
 }
+
+/* ── Responsive 2-col fallback ── */
+@media (max-width: 1024px) {
+  .responsive-2col { grid-template-columns: 1fr !important; }
+}
+@media (min-width: 1024px) {
+  .lg\:flex { display: flex !important; }
+  .lg\:block { display: block !important; }
+  .hidden.lg\:flex { display: flex !important; }
+  .hidden.lg\:block { display: block !important; }
+}
+
+/* ── Spin keyframe used inline ── */
+@keyframes spin { to { transform: rotate(360deg); } }
